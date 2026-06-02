@@ -151,7 +151,7 @@ function addH(n){
   var fg2 = document.createElement('div'); fg2.className = 'fg';
   var lb2 = document.createElement('label'); lb2.textContent = 'الحالة';
   var sel2 = document.createElement('select'); sel2.className = 'h-status';
-  ['لايوجد عمل','عمل منجز','توقف مؤقت','مكتمل'].forEach(function(s){ var o=document.createElement('option'); o.textContent=s; o.value=s; sel2.appendChild(o); });
+  ['جاري العمل','متوقف','مكتمل'].forEach(function(s){ var o=document.createElement('option'); o.textContent=s; o.value=s; sel2.appendChild(o); });
   
   // stop wrap
   var stopWrap = document.createElement('div'); stopWrap.className = 'fg'; stopWrap.style.display='none';
@@ -160,7 +160,7 @@ function addH(n){
   stopWrap.appendChild(stopLb); stopWrap.appendChild(stopTa);
 
   sel2.addEventListener('change', function(){
-    stopWrap.style.display = sel2.value === 'توقف مؤقت' ? 'block' : 'none';
+    stopWrap.style.display = sel2.value === 'متوقف' ? 'block' : 'none';
   });
   fg2.appendChild(lb2); fg2.appendChild(sel2); g3.appendChild(fg2);
 
