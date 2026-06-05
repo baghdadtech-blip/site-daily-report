@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إدارة المقاولات</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #234f7d;
+  --accent: #f0a500;
+  --accent-light: #f5bc40;
+  --success: #1e8449;
+  --danger: #c0392b;
+  --warning: #d68910;
+  --info: #1a6ea8;
+  --bg: #f0f2f5;
+  --card-bg: #ffffff;
+  --sidebar-bg: #1a3a5c;
+  --sidebar-text: #cdd9e5;
+  --sidebar-active: #f0a500;
+  --text-dark: #1a1a2e;
+  --text-muted: #6c757d;
+  --border: #dee2e6;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius: 12px;
+  --sidebar-width: 260px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+/* ===== LOGIN ===== */
+#loginPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a3a5c 0%, #0d1f33 50%, #1a3a5c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+#loginPage::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: rgba(240,165,0,0.06);
+  top: -200px; left: -200px;
+}
+#loginPage::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(240,165,0,0.04);
+  bottom: -100px; right: -100px;
+}
+.login-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1;
+}
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-logo .logo-icon {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(26,58,92,0.3);
+}
+.login-logo .logo-icon i { font-size: 36px; color: var(--accent); }
+.login-logo h4 { color: var(--primary); font-weight: 800; font-size: 1.3rem; }
+.login-logo p { color: var(--text-muted); font-size: 0.9rem; }
+.login-card .form-label { font-weight: 600; color: var(--primary); }
+.login-card .form-control {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+.login-card .form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,58,92,0.1);
+}
+.btn-login {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s;
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,92,0.35); }
+
+/* ===== LAYOUT ===== */
+#appLayout { display: none; min-height: 100vh; }
+
+.sidebar {
+  position: fixed;
+  top: 0; right: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  z-index: 1040;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar-logo .logo-box {
+  width: 44px; height: 44px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-logo .logo-box i { font-size: 20px; color: var(--primary); }
+.sidebar-logo .logo-text h6 { color: #fff; font-weight: 700; font-size: 0.95rem; margin: 0; }
+.sidebar-logo .logo-text span { color: var(--sidebar-text); font-size: 0.78rem; }
+
+.sidebar-nav { padding: 16px 0; flex: 1; }
+.nav-section-title {
+  padding: 8px 20px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.nav-item-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border-right: 3px solid transparent;
+}
+.nav-item-link:hover {
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+}
+.nav-item-link.active {
+  background: rgba(240,165,0,0.15);
+  color: var(--accent);
+  border-right-color: var(--accent);
+}
+.nav-item-link i { width: 20px; text-align: center; font-size: 0.95rem; }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.user-avatar i { font-size: 14px; color: var(--primary); }
+.user-details h6 { color: #fff; font-size: 0.85rem; margin: 0; font-weight: 600; }
+.user-details span { color: var(--sidebar-text); font-size: 0.75rem; }
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-right: var(--sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: #fff;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.btn-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+.btn-icon:hover { background: var(--primary); color: #fff; }
+
+.page-content {
+  padding: 24px;
+  flex: 1;
+}
+
+/* ===== PAGES ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== CARDS ===== */
+.card {
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background: var(--card-bg);
+}
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-header h5 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-header h5 i { color: var(--accent); }
+
+/* ===== STAT CARDS ===== */
+.stat-card {
+  border-radius: var(--radius);
+  padding: 20px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  bottom: -30px; left: -20px;
+}
+.stat-card .stat-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+}
+.stat-card .stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-card .stat-label { font-size: 0.85rem; opacity: 0.85; font-weight: 500; }
+.stat-card.blue { background: linear-gradient(135deg, #1a3a5c, #234f7d); }
+.stat-card.gold { background: linear-gradient(135deg, #d68910, #f0a500); }
+.stat-card.green { background: linear-gradient(135deg, #1a7a44, #27ae60); }
+.stat-card.red { background: linear-gradient(135deg, #a93226, #e74c3c); }
+.stat-card.teal { background: linear-gradient(135deg, #0e6655, #1abc9c); }
+.stat-card.purple { background: linear-gradient(135deg, #6c3483, #9b59b6); }
+.stat-card.navy { background: linear-gradient(135deg, #154360, #2980b9); }
+.stat-card.orange { background: linear-gradient(135deg, #a04000, #e67e22); }
+
+/* ===== TABLES ===== */
+.table-wrapper { overflow-x: auto; border-radius: 0 0 var(--radius) var(--radius); }
+.table { margin: 0; font-size: 0.88rem; }
+.table thead th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  padding: 12px 14px;
+  border: none;
+  white-space: nowrap;
+}
+.table tbody tr { transition: background 0.15s; }
+.table tbody tr:hover { background: rgba(26,58,92,0.04); }
+.table tbody td { padding: 10px 14px; vertical-align: middle; border-color: #f0f0f0; }
+
+/* ===== BADGES ===== */
+.badge-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.badge-active { background: #d5f5e3; color: #1e8449; }
+.badge-stopped { background: #fdebd0; color: #d35400; }
+.badge-done { background: #d6eaf8; color: #1a5276; }
+.badge-paid { background: #d5f5e3; color: #1e8449; }
+.badge-unpaid { background: #fadbd8; color: #c0392b; }
+
+/* ===== FORMS ===== */
+.form-label { font-weight: 600; font-size: 0.88rem; color: var(--primary); margin-bottom: 6px; }
+.form-control, .form-select {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,58,92,0.1);
+}
+
+/* ===== BUTTONS ===== */
+.btn { font-family: 'Cairo', sans-serif; font-weight: 600; border-radius: 8px; }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); }
+.btn-warning { background: var(--accent); border-color: var(--accent); color: var(--primary); }
+.btn-sm { padding: 5px 12px; font-size: 0.82rem; }
+
+/* ===== MODAL ===== */
+.modal-header {
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.modal-header .btn-close { filter: brightness(0) invert(1); }
+.modal-title { font-weight: 700; }
+.modal-content { border: none; border-radius: var(--radius); box-shadow: var(--shadow-lg); }
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  position: relative;
+}
+.search-bar .form-control {
+  padding-right: 38px;
+}
+.search-bar i {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ===== PROGRESS ===== */
+.progress { height: 8px; border-radius: 4px; }
+.progress-bar { border-radius: 4px; }
+
+/* ===== MOBILE ===== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1039;
+}
+.menu-toggle {
+  display: none;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: var(--bg);
+  color: var(--primary);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 991px) {
+  .sidebar { transform: translateX(100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .main-content { margin-right: 0; }
+  .menu-toggle { display: flex; }
+  .page-content { padding: 16px; }
+  .stat-card .stat-value { font-size: 1.3rem; }
+}
+
+@media (max-width: 576px) {
+  .login-card { padding: 32px 24px; margin: 16px; }
+  .topbar { padding: 0 16px; }
+}
+
+/* ===== ALERTS ===== */
+.alert-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 300px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+
+/* ===== SUMMARY ROW ===== */
+.summary-row {
+  background: linear-gradient(135deg, #f8f9fa, #eef1f5);
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+}
+.summary-item { text-align: center; }
+.summary-item .val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+.summary-item .lbl { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+}
+.empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h4 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.page-header h4 i { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ALERT TOAST -->
+<div id="alertToast" class="alert alert-success alert-toast" role="alert"></div>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"><i class="fas fa-hard-hat"></i></div>
+      <h4>نظام إدارة المقاولات</h4>
+      <p>إدارة المشاريع والحسابات</p>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">اسم المستخدم</label>
+      <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم">
+    </div>
+    <div class="mb-4">
+      <label class="form-label">كلمة المرور</label>
+      <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
+    </div>
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
+    </button>
+    <div id="loginError" class="alert alert-danger mt-3 d-none" style="border-radius:8px;font-size:0.88rem;"></div>
+    <div class="text-center mt-3" style="font-size:0.78rem;color:var(--text-muted);">
+      مدير: admin / admin123 &nbsp;|&nbsp; مستخدم: user / user123
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP LAYOUT ===== -->
+<div id="appLayout">
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-box"><i class="fas fa-hard-hat"></i></div>
+        <div class="logo-text">
+          <h6>نظام المقاولات</h6>
+          <span>إدارة المشاريع والحسابات</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-title">الرئيسية</div>
+      <a class="nav-item-link active" onclick="showPage('dashboard')">
+        <i class="fas fa-th-large"></i> لوحة التحكم
+      </a>
+
+      <div class="nav-section-title">المشاريع</div>
+      <a class="nav-item-link" onclick="showPage('projects')">
+        <i class="fas fa-project-diagram"></i> إدارة المشاريع
+      </a>
+      <a class="nav-item-link" onclick="showPage('financial')">
+        <i class="fas fa-chart-bar"></i> الموقف المالي
+      </a>
+
+      <div class="nav-section-title">المالية</div>
+      <a class="nav-item-link" onclick="showPage('payments')">
+        <i class="fas fa-hand-holding-usd"></i> استلام الدفعات
+      </a>
+      <a class="nav-item-link" onclick="showPage('receipts')">
+        <i class="fas fa-file-invoice-dollar"></i> سندات القبض
+      </a>
+      <a class="nav-item-link" onclick="showPage('disbursements')">
+        <i class="fas fa-file-invoice"></i> سندات الصرف
+      </a>
+      <a class="nav-item-link" onclick="showPage('cashbox')">
+        <i class="fas fa-cash-register"></i> الصندوق
+      </a>
+
+      <div class="nav-section-title">الموارد البشرية</div>
+      <a class="nav-item-link" onclick="showPage('contractors')">
+        <i class="fas fa-user-tie"></i> المقاولون الثانويون
+      </a>
+      <a class="nav-item-link" onclick="showPage('employees')">
+        <i class="fas fa-users"></i> الموظفون والرواتب
+      </a>
+
+      <div class="nav-section-title">التقارير</div>
+      <a class="nav-item-link" onclick="showPage('reports')">
+        <i class="fas fa-chart-pie"></i> التقارير
+      </a>
+
+      <div class="nav-section-title admin-only">الإدارة</div>
+      <a class="nav-item-link admin-only" onclick="showPage('settings')">
+        <i class="fas fa-cog"></i> الإعدادات
+      </a>
+      <a class="nav-item-link admin-only" onclick="showPage('users')">
+        <i class="fas fa-user-shield"></i> إدارة المستخدمين
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
+        <div class="user-details">
+          <h6 id="sidebarUsername">-</h6>
+          <span id="sidebarRole">-</span>
+        </div>
+        <button class="btn-icon me-auto" onclick="doLogout()" title="تسجيل الخروج" style="margin-right:auto;margin-left:0;">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span class="topbar-title" id="topbarTitle">لوحة التحكم</span>
+      </div>
+      <div class="topbar-actions">
+        <span id="topbarDate" style="font-size:0.82rem;color:var(--text-muted);"></span>
+        <button class="btn-icon" onclick="exportBackup()" title="نسخة احتياطية">
+          <i class="fas fa-download"></i>
+        </button>
+        <button class="btn-icon" onclick="document.getElementById('importFile').click()" title="استعادة">
+          <i class="fas fa-upload"></i>
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)">
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h4><i class="fas fa-th-large"></i> لوحة التحكم</h4>
+          <span id="dashDate" style="font-size:0.85rem;color:var(--text-muted);font-weight:600;"></span>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-card blue">
+              <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+              <div class="stat-value" id="statActiveProjects">0</div>
+              <div class="stat-label">مشاريع فعالة</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card gold">
+              <div class="stat-icon"><i class="fas fa-file-contract"></i></div>
+              <div class="stat-value" id="statTotalContracts">0</div>
+              <div class="stat-label">إجمالي العقود</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card green">
+              <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
+              <div class="stat-value" id="statTotalReceived">0</div>
+              <div class="stat-label">إجمالي المستلم</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card red">
+              <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+              <div class="stat-value" id="statTotalExpenses">0</div>
+              <div class="stat-label">إجمالي المصروفات</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card teal">
+              <div class="stat-icon"><i class="fas fa-cash-register"></i></div>
+              <div class="stat-value" id="statCashBalance">0</div>
+              <div class="stat-label">رصيد الصندوق</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card purple">
+              <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="stat-value" id="statNetProfit">0</div>
+              <div class="stat-label">صافي الأرباح</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card navy">
+              <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+              <div class="stat-value" id="statContractors">0</div>
+              <div class="stat-label">المقاولون</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card orange">
+              <div class="stat-icon"><i class="fas fa-users"></i></div>
+              <div class="stat-value" id="statEmployees">0</div>
+              <div class="stat-label">الموظفون</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5><i class="fas fa-project-diagram"></i> المشاريع الفعالة</h5>
+              </div>
+              <div class="card-body p-0">
+                <div id="dashProjects" class="p-3"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5><i class="fas fa-history"></i> آخر العمليات</h5>
+              </div>
+              <div class="card-body p-0">
+                <div id="dashRecent" class="p-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECTS ===== -->
+      <div class="page" id="page-projects">
+        <div class="page-header">
+          <h4><i class="fas fa-project-diagram"></i> إدارة المشاريع</h4>
+          <button class="btn btn-primary btn-sm" onclick="openProjectModal()">
+            <i class="fas fa-plus me-1"></i> مشروع جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> قائمة المشاريع</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchProjects" placeholder="بحث..." oninput="renderProjects()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>اسم المشروع</th>
+                  <th>الشركة المتعاقدة</th>
+                  <th>قيمة العقد</th>
+                  <th>الوحدات</th>
+                  <th>المستلم</th>
+                  <th>المصروف</th>
+                  <th>الربح</th>
+                  <th>الحالة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTable"></tbody>
+            </table>
+          </div>
+          <div id="projectsEmpty" class="empty-state d-none">
+            <i class="fas fa-project-diagram d-block"></i>
+            <p>لا توجد مشاريع مسجلة بعد</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== FINANCIAL STATUS ===== -->
+      <div class="page" id="page-financial">
+        <div class="page-header">
+          <h4><i class="fas fa-chart-bar"></i> الموقف المالي للمشاريع</h4>
+          <button class="btn btn-primary btn-sm" onclick="printPage('financialPrintArea')">
+            <i class="fas fa-print me-1"></i> طباعة
+          </button>
+        </div>
+        <div id="financialPrintArea">
+        <div class="card">
+          <div class="card-header"><h5><i class="fas fa-table"></i> جدول الموقف المالي</h5></div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>المشروع</th>
+                  <th>قيمة العقد</th>
+                  <th>الوحدات المتفق</th>
+                  <th>المنجز</th>
+                  <th>نسبة الإنجاز</th>
+                  <th>المقبوض</th>
+                  <th>المصروف</th>
+                  <th>المتبقي</th>
+                  <th>صافي الربح</th>
+                </tr>
+              </thead>
+              <tbody id="financialTable"></tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- ===== PAYMENTS ===== -->
+      <div class="page" id="page-payments">
+        <div class="page-header">
+          <h4><i class="fas fa-hand-holding-usd"></i> استلام الدفعات</h4>
+          <button class="btn btn-primary btn-sm" onclick="openPaymentModal()">
+            <i class="fas fa-plus me-1"></i> دفعة جديدة
+          </button>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="summary-row">
+              <div class="summary-item">
+                <div class="val text-success" id="totalPaymentsReceived">0</div>
+                <div class="lbl">إجمالي المستلم</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="summary-row">
+              <div class="summary-item">
+                <div class="val text-danger" id="totalPaymentsRemaining">0</div>
+                <div class="lbl">المتبقي من العقود</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="summary-row">
+              <div class="summary-item">
+                <div class="val text-primary" id="totalPaymentsCount">0</div>
+                <div class="lbl">عدد الدفعات</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> سجل الدفعات</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchPayments" placeholder="بحث..." oninput="renderPayments()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th><th>التاريخ</th><th>الوقت</th><th>المشروع</th>
+                  <th>الجهة الدافعة</th><th>المستلم</th><th>المبلغ</th>
+                  <th>طريقة الدفع</th><th>ملاحظات</th><th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTable"></tbody>
+            </table>
+          </div>
+          <div id="paymentsEmpty" class="empty-state d-none">
+            <i class="fas fa-hand-holding-usd d-block"></i>
+            <p>لا توجد دفعات مسجلة</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RECEIPTS ===== -->
+      <div class="page" id="page-receipts">
+        <div class="page-header">
+          <h4><i class="fas fa-file-invoice-dollar"></i> سندات القبض</h4>
+          <button class="btn btn-primary btn-sm" onclick="openReceiptModal()">
+            <i class="fas fa-plus me-1"></i> سند جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> قائمة سندات القبض</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchReceipts" placeholder="بحث..." oninput="renderReceipts()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>رقم السند</th><th>التاريخ</th><th>الوقت</th><th>المشروع</th>
+                  <th>الجهة الدافعة</th><th>المبلغ</th><th>كاتب السند</th><th>ملاحظات</th><th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="receiptsTable"></tbody>
+            </table>
+          </div>
+          <div id="receiptsEmpty" class="empty-state d-none">
+            <i class="fas fa-file-invoice-dollar d-block"></i>
+            <p>لا توجد سندات قبض</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== DISBURSEMENTS ===== -->
+      <div class="page" id="page-disbursements">
+        <div class="page-header">
+          <h4><i class="fas fa-file-invoice"></i> سندات الصرف</h4>
+          <button class="btn btn-primary btn-sm" onclick="openDisbursementModal()">
+            <i class="fas fa-plus me-1"></i> سند جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> قائمة سندات الصرف</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchDisbursements" placeholder="بحث..." oninput="renderDisbursements()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>رقم السند</th><th>التاريخ</th><th>الوقت</th><th>المشروع</th>
+                  <th>المستفيد</th><th>المبلغ</th><th>سبب الصرف</th><th>كاتب السند</th><th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="disbursementsTable"></tbody>
+            </table>
+          </div>
+          <div id="disbursementsEmpty" class="empty-state d-none">
+            <i class="fas fa-file-invoice d-block"></i>
+            <p>لا توجد سندات صرف</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CASHBOX ===== -->
+      <div class="page" id="page-cashbox">
+        <div class="page-header">
+          <h4><i class="fas fa-cash-register"></i> الصندوق</h4>
+          <button class="btn btn-primary btn-sm" onclick="printPage('cashboxPrintArea')">
+            <i class="fas fa-print me-1"></i> طباعة
+          </button>
+        </div>
+        <div id="cashboxPrintArea">
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="stat-card green" style="padding:16px;">
+              <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
+              <div class="stat-value" id="cashTotal">0</div>
+              <div class="stat-label">إجمالي الواردات</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card red" style="padding:16px;">
+              <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+              <div class="stat-value" id="cashExpenses">0</div>
+              <div class="stat-label">إجمالي المصروفات</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card blue" style="padding:16px;">
+              <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+              <div class="stat-value" id="cashBalance">0</div>
+              <div class="stat-label">الرصيد الحالي</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> حركات الصندوق</h5>
+            <div class="d-flex gap-2 flex-wrap">
+              <select class="form-select form-select-sm" id="cashFilterProject" onchange="renderCashbox()" style="width:160px;">
+                <option value="">كل المشاريع</option>
+              </select>
+              <input type="date" class="form-control form-control-sm" id="cashFilterFrom" onchange="renderCashbox()" style="width:140px;">
+              <input type="date" class="form-control form-control-sm" id="cashFilterTo" onchange="renderCashbox()" style="width:140px;">
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th><th>النوع</th><th>المشروع</th>
+                  <th>البيان</th><th>وارد</th><th>صادر</th><th>الرصيد</th>
+                </tr>
+              </thead>
+              <tbody id="cashboxTable"></tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- ===== CONTRACTORS ===== -->
+      <div class="page" id="page-contractors">
+        <div class="page-header">
+          <h4><i class="fas fa-user-tie"></i> المقاولون الثانويون</h4>
+          <button class="btn btn-primary btn-sm" onclick="openContractorModal()">
+            <i class="fas fa-plus me-1"></i> مقاول جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> قائمة المقاولين</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchContractors" placeholder="بحث..." oninput="renderContractors()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th><th>اسم المقاول</th><th>الهاتف</th><th>نوع التعاقد</th>
+                  <th>إجمالي العقد</th><th>المصروف</th><th>المتبقي</th><th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="contractorsTable"></tbody>
+            </table>
+          </div>
+          <div id="contractorsEmpty" class="empty-state d-none">
+            <i class="fas fa-user-tie d-block"></i>
+            <p>لا يوجد مقاولون مسجلون</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EMPLOYEES ===== -->
+      <div class="page" id="page-employees">
+        <div class="page-header">
+          <h4><i class="fas fa-users"></i> الموظفون والرواتب</h4>
+          <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
+            <i class="fas fa-plus me-1"></i> موظف جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-list"></i> قائمة الموظفين</h5>
+            <div class="search-bar" style="width:220px;">
+              <input type="text" class="form-control form-control-sm" id="searchEmployees" placeholder="بحث..." oninput="renderEmployees()">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th><th>الاسم</th><th>المسمى الوظيفي</th><th>موقع العمل</th>
+                  <th>الراتب الأساسي</th><th>الحالة</th><th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="employeesTable"></tbody>
+            </table>
+          </div>
+          <div id="employeesEmpty" class="empty-state d-none">
+            <i class="fas fa-users d-block"></i>
+            <p>لا يوجد موظفون مسجلون</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div class="page" id="page-reports">
+        <div class="page-header">
+          <h4><i class="fas fa-chart-pie"></i> التقارير</h4>
+        </div>
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('project')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-project-diagram fa-2x mb-3" style="color:var(--primary)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">كشف حساب مشروع</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('contractor')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-user-tie fa-2x mb-3" style="color:var(--accent)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">كشف حساب مقاول</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('employee')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-users fa-2x mb-3" style="color:var(--success)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">كشف حساب موظف</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('receipts')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-file-invoice-dollar fa-2x mb-3" style="color:var(--info)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">تقرير المقبوضات</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('expenses')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-file-invoice fa-2x mb-3" style="color:var(--danger)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">تقرير المصروفات</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('salaries')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-money-check-alt fa-2x mb-3" style="color:var(--warning)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">تقرير الرواتب</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4" onclick="generateReport('pl')">
+            <div class="card h-100" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+              <div class="card-body text-center p-4">
+                <i class="fas fa-chart-line fa-2x mb-3" style="color:var(--purple,#9b59b6)"></i>
+                <h6 style="font-weight:700;color:var(--primary)">الأرباح والخسائر</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="reportOutput" class="mt-4"></div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <h4><i class="fas fa-cog"></i> الإعدادات</h4>
+        </div>
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">اسم الشركة</label>
+                <input type="text" class="form-control" id="settingCompanyName" placeholder="اسم شركة المقاولات">
+              </div>
+              <div class="col-12">
+                <label class="form-label">عنوان الشركة</label>
+                <input type="text" class="form-control" id="settingCompanyAddress" placeholder="العنوان">
+              </div>
+              <div class="col-12">
+                <label class="form-label">العملة</label>
+                <select class="form-select" id="settingCurrency">
+                  <option value="IQD">دينار عراقي (IQD)</option>
+                  <option value="USD">دولار أمريكي (USD)</option>
+                  <option value="SAR">ريال سعودي (SAR)</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary" onclick="saveSettings()">
+                  <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== USERS ===== -->
+      <div class="page" id="page-users">
+        <div class="page-header">
+          <h4><i class="fas fa-user-shield"></i> إدارة المستخدمين</h4>
+          <button class="btn btn-primary btn-sm" onclick="openUserModal()">
+            <i class="fas fa-plus me-1"></i> مستخدم جديد
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr><th>#</th><th>اسم المستخدم</th><th>الصلاحية</th><th>إجراءات</th></tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end page-content -->
+  </div><!-- end main-content -->
+</div><!-- end appLayout -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-project-diagram me-2"></i><span id="projectModalTitle">مشروع جديد</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="projectId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">اسم المشروع *</label>
+            <input type="text" class="form-control" id="projectName">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الشركة الرئيسية المتعاقدة *</label>
+            <input type="text" class="form-control" id="projectCompany">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">قيمة العقد الكلية *</label>
+            <input type="number" class="form-control" id="projectContractValue" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">عدد البيوت/الوحدات</label>
+            <input type="number" class="form-control" id="projectUnits" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">سعر الوحدة/البيت</label>
+            <input type="number" class="form-control" id="projectUnitPrice" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">حالة المشروع</label>
+            <select class="form-select" id="projectStatus">
+              <option value="active">فعال</option>
+              <option value="stopped">متوقف</option>
+              <option value="done">مكتمل</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">تاريخ المباشرة</label>
+            <input type="date" class="form-control" id="projectStartDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">تاريخ الإنجاز المتوقع</label>
+            <input type="date" class="form-control" id="projectEndDate">
+          </div>
+          <div class="col-12">
+            <label class="form-label">ملاحظات</label>
+            <textarea class="form-control" id="projectNotes" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveProject()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-hand-holding-usd me-2"></i>تسجيل دفعة مستلمة</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="paymentId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">المشروع *</label>
+            <select class="form-select" id="paymentProject"></select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الجهة الدافعة *</label>
+            <input type="text" class="form-control" id="paymentPayer">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">اسم المستلم *</label>
+            <input type="text" class="form-control" id="paymentReceiver">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">قيمة الدفعة *</label>
+            <input type="number" class="form-control" id="paymentAmount" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">طريقة الدفع</label>
+            <select class="form-select" id="paymentMethod">
+              <option value="نقداً">نقداً</option>
+              <option value="تحويل بنكي">تحويل بنكي</option>
+              <option value="شيك">شيك</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">التاريخ</label>
+            <input type="date" class="form-control" id="paymentDate">
+          </div>
+          <div class="col-12">
+            <label class="form-label">ملاحظات</label>
+            <textarea class="form-control" id="paymentNotes" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="savePayment()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-file-invoice-dollar me-2"></i>سند قبض جديد</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="receiptId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">المشروع</label>
+            <select class="form-select" id="receiptProject"></select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الجهة الدافعة *</label>
+            <input type="text" class="form-control" id="receiptPayer">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المبلغ *</label>
+            <input type="number" class="form-control" id="receiptAmount" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">التاريخ</label>
+            <input type="date" class="form-control" id="receiptDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">كاتب السند</label>
+            <input type="text" class="form-control" id="receiptWriter">
+          </div>
+          <div class="col-12">
+            <label class="form-label">ملاحظات</label>
+            <textarea class="form-control" id="receiptNotes" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveReceipt()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Disbursement Modal -->
+<div class="modal fade" id="disbursementModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-file-invoice me-2"></i>سند صرف جديد</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="disbursementId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">المشروع</label>
+            <select class="form-select" id="disbursementProject"></select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المستفيد *</label>
+            <input type="text" class="form-control" id="disbursementBeneficiary">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المبلغ *</label>
+            <input type="number" class="form-control" id="disbursementAmount" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">التاريخ</label>
+            <input type="date" class="form-control" id="disbursementDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">سبب الصرف *</label>
+            <input type="text" class="form-control" id="disbursementReason">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">كاتب السند</label>
+            <input type="text" class="form-control" id="disbursementWriter">
+          </div>
+          <div class="col-12">
+            <label class="form-label">ملاحظات</label>
+            <textarea class="form-control" id="disbursementNotes" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveDisbursement()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contractor Modal -->
+<div class="modal fade" id="contractorModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-user-tie me-2"></i><span id="contractorModalTitle">مقاول جديد</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="contractorId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">اسم المقاول *</label>
+            <input type="text" class="form-control" id="contractorName">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">رقم الهاتف</label>
+            <input type="text" class="form-control" id="contractorPhone">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">نوع التعاقد *</label>
+            <select class="form-select" id="contractorType" onchange="toggleContractorType()">
+              <option value="meter">على المتر</option>
+              <option value="lump">مبلغ مقطوعية (قطعي)</option>
+            </select>
+          </div>
+          <div class="col-md-6" id="contractorMeterPriceDiv">
+            <label class="form-label">سعر المتر</label>
+            <input type="number" class="form-control" id="contractorMeterPrice" min="0">
+          </div>
+          <div class="col-md-6" id="contractorMetersDiv">
+            <label class="form-label">عدد الأمتار المنفذة</label>
+            <input type="number" class="form-control" id="contractorMeters" min="0">
+          </div>
+          <div class="col-md-6" id="contractorLumpDiv" style="display:none;">
+            <label class="form-label">قيمة الاتفاق الكلية</label>
+            <input type="number" class="form-control" id="contractorLumpSum" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">عدد البيوت المستلمة</label>
+            <input type="number" class="form-control" id="contractorHouses" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المبالغ المصروفة</label>
+            <input type="number" class="form-control" id="contractorPaid" min="0">
+          </div>
+          <div class="col-12">
+            <label class="form-label">ملاحظات</label>
+            <textarea class="form-control" id="contractorNotes" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveContractor()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-user me-2"></i><span id="employeeModalTitle">موظف جديد</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="employeeId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">الاسم الكامل *</label>
+            <input type="text" class="form-control" id="employeeName">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المسمى الوظيفي</label>
+            <input type="text" class="form-control" id="employeeTitle">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">موقع العمل</label>
+            <input type="text" class="form-control" id="employeeLocation">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الراتب الشهري *</label>
+            <input type="number" class="form-control" id="employeeSalary" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">تاريخ المباشرة</label>
+            <input type="date" class="form-control" id="employeeStartDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">تاريخ استحقاق الراتب</label>
+            <input type="date" class="form-control" id="employeePayDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الحالة الوظيفية</label>
+            <select class="form-select" id="employeeStatus">
+              <option value="active">فعال</option>
+              <option value="inactive">غير فعال</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">أيام الحضور</label>
+            <input type="number" class="form-control" id="employeeAttendance" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">أيام الإجازة</label>
+            <input type="number" class="form-control" id="employeeLeave" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">أيام الغياب</label>
+            <input type="number" class="form-control" id="employeeAbsence" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">الخصومات</label>
+            <input type="number" class="form-control" id="employeeDeductions" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">المكافآت</label>
+            <input type="number" class="form-control" id="employeeBonuses" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">حالة الصرف</label>
+            <select class="form-select" id="employeePayStatus">
+              <option value="unpaid">لم يُصرف</option>
+              <option value="paid">تم الصرف</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveEmployee()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-user-shield me-2"></i>مستخدم جديد</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">اسم المستخدم *</label>
+            <input type="text" class="form-control" id="newUsername">
+          </div>
+          <div class="col-12">
+            <label class="form-label">كلمة المرور *</label>
+            <input type="password" class="form-control" id="newPassword">
+          </div>
+          <div class="col-12">
+            <label class="form-label">الصلاحية</label>
+            <select class="form-select" id="newRole">
+              <option value="user">مستخدم</option>
+              <option value="admin">مدير النظام</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveUser()">
+          <i class="fas fa-save me-1"></i>حفظ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-print me-2"></i>معاينة الطباعة</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="printContent"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+          <i class="fas fa-print me-1"></i>طباعة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== DATA STORE =====
+const DB = {
+  get(key, def=[]) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+  },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+  getObj(key, def={}) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+  }
+};
+
+// ===== INIT DATA =====
+function initData() {
+  if (!DB.get('users', null)) {
+    DB.set('users', [
+      { id:1, username:'admin', password:'admin123', role:'admin' },
+      { id:2, username:'user', password:'user123', role:'user' }
+    ]);
+  }
+  if (!DB.getObj('settings', null)) {
+    DB.set('settings', { companyName:'شركة المقاولات', companyAddress:'', currency:'IQD' });
+  }
+  ['projects','payments','receipts','disbursements','contractors','employees'].forEach(k => {
+    if (!localStorage.getItem(k)) DB.set(k, []);
+  });
+}
+
+// ===== AUTH =====
+let currentUser = null;
+
+function doLogin() {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value.trim();
+  const users = DB.get('users');
+  const found = users.find(x => x.username === u && x.password === p);
+  if (!found) {
+    const err = document.getElementById('loginError');
+    err.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+    err.classList.remove('d-none');
+    return;
+  }
+  currentUser = found;
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appLayout').style.display = 'flex';
+  document.getElementById('sidebarUsername').textContent = found.username;
+  document.getElementById('sidebarRole').textContent = found.role === 'admin' ? 'مدير النظام' : 'مستخدم';
+  // hide admin-only items for non-admin
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = found.role === 'admin' ? '' : 'none';
+  });
+  updateDate();
+  showPage('dashboard');
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('appLayout').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').classList.add('d-none');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginPage').style.display !== 'none') doLogin();
+});
+
+// ===== NAVIGATION =====
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item-link').forEach(l => l.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.nav-item-link').forEach(l => {
+    if (l.getAttribute('onclick') && l.getAttribute('onclick').includes(`'${name}'`)) l.classList.add('active');
+  });
+  const titles = {
+    dashboard:'لوحة التحكم', projects:'إدارة المشاريع', financial:'الموقف المالي',
+    payments:'استلام الدفعات', receipts:'سندات القبض', disbursements:'سندات الصرف',
+    cashbox:'الصندوق', contractors:'المقاولون الثانويون', employees:'الموظفون والرواتب',
+    reports:'التقارير', settings:'الإعدادات', users:'إدارة المستخدمين'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || '';
+  if (window.innerWidth < 992) closeSidebar();
+  // Render page data
+  const renders = {
+    dashboard: renderDashboard,
+    projects: renderProjects,
+    financial: renderFinancial,
+    payments: renderPayments,
+    receipts: renderReceipts,
+    disbursements: renderDisbursements,
+    cashbox: renderCashbox,
+    contractors: renderContractors,
+    employees: renderEmployees,
+    users: renderUsers,
+    settings: loadSettings
+  };
+  if (renders[name]) renders[name]();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ===== UTILS =====
+function uid() { return Date.now() + Math.random().toString(36).substr(2,5); }
+
+function fmt(n) {
+  const s = DB.getObj('settings');
+  const c = s.currency || 'IQD';
+  return Number(n||0).toLocaleString('ar-IQ') + ' ' + c;
+}
+
+function fmtShort(n) { return Number(n||0).toLocaleString('ar-IQ'); }
+
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function nowTime() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function updateDate() {
+  const d = new Date().toLocaleDateString('ar-IQ', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const el = document.getElementById('topbarDate');
+  if (el) el.textContent = d;
+  const el2 = document.getElementById('dashDate');
+  if (el2) el2.textContent = d;
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('alertToast');
+  t.className = `alert alert-${type} alert-toast`;
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function confirmDelete(msg, fn) {
+  if (confirm(msg || 'هل تريد الحذف؟')) fn();
+}
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const projects = DB.get('projects');
+  const payments = DB.get('payments');
+  const receipts = DB.get('receipts');
+  const disbursements = DB.get('disbursements');
+  const contractors = DB.get('contractors');
+  const employees = DB.get('employees');
+
+  const activeProjects = projects.filter(p => p.status === 'active');
+  const totalContracts = projects.reduce((s,p) => s + Number(p.contractValue||0), 0);
+  const totalReceived = payments.reduce((s,p) => s + Number(p.amount||0), 0);
+  const totalDisb = disbursements.reduce((s,d) => s + Number(d.amount||0), 0);
+  const totalReceipts = receipts.reduce((s,r) => s + Number(r.amount||0), 0);
+  const cashIn = totalReceived + totalReceipts;
+  const cashOut = totalDisb;
+  const cashBalance = cashIn - cashOut;
+  const netProfit = totalReceived - totalDisb;
+
+  document.getElementById('statActiveProjects').textContent = activeProjects.length;
+  document.getElementById('statTotalContracts').textContent = fmtShort(totalContracts);
+  document.getElementById('statTotalReceived').textContent = fmtShort(totalReceived);
+  document.getElementById('statTotalExpenses').textContent = fmtShort(totalDisb);
+  document.getElementById('statCashBalance').textContent = fmtShort(cashBalance);
+  document.getElementById('statNetProfit').textContent = fmtShort(netProfit);
+  document.getElementById('statContractors').textContent = contractors.length;
+  document.getElementById('statEmployees').textContent = employees.length;
+
+  // Active projects list
+  const dp = document.getElementById('dashProjects');
+  if (!activeProjects.length) {
+    dp.innerHTML = '<div class="empty-state"><i class="fas fa-project-diagram d-block"></i><p>لا توجد مشاريع فعالة</p></div>';
+  } else {
+    dp.innerHTML = activeProjects.slice(0,5).map(p => {
+      const rec = payments.filter(x => x.projectId === p.id).reduce((s,x) => s + Number(x.amount||0), 0);
+      const pct = p.contractValue ? Math.min(100, Math.round(rec/p.contractValue*100)) : 0;
+      return `<div class="mb-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span style="font-weight:600;font-size:0.88rem">${p.name}</span>
+          <span style="font-size:0.82rem;color:var(--text-muted)">${pct}%</span>
+        </div>
+        <div class="progress"><div class="progress-bar bg-primary" style="width:${pct}%"></div></div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:3px">${p.company}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Recent operations
+  const dr = document.getElementById('dashRecent');
+  let recent = [];
+  payments.forEach(x => recent.push({date:x.date, time:x.time||'', type:'استلام دفعة', desc:x.payer, amount:'+'+fmtShort(x.amount), color:'green'}));
+  disbursements.forEach(x => recent.push({date:x.date, time:x.time||'', type:'سند صرف', desc:x.beneficiary, amount:'-'+fmtShort(x.amount), color:'red'}));
+  recent.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  if (!recent.length) {
+    dr.innerHTML = '<div class="empty-state"><i class="fas fa-history d-block"></i><p>لا توجد عمليات</p></div>';
+  } else {
+    dr.innerHTML = recent.slice(0,8).map(r => `
+      <div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="font-size:0.85rem">
+        <div>
+          <span style="font-weight:600">${r.type}</span>
+          <span style="color:var(--text-muted);margin-right:8px">${r.desc||''}</span>
+        </div>
+        <div>
+          <span style="color:var(--${r.color});font-weight:700">${r.amount}</span>
+          <span style="color:var(--text-muted);font-size:0.75rem;margin-right:8px">${r.date||''}</span>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ===== PROJECTS =====
+function openProjectModal(id=null) {
+  const fields = ['projectId','projectName','projectCompany','projectContractValue','projectUnits',
+    'projectUnitPrice','projectStatus','projectStartDate','projectEndDate','projectNotes'];
+  fields.forEach(f => { const el=document.getElementById(f); if(el) el.value=''; });
+  document.getElementById('projectStatus').value = 'active';
+  document.getElementById('projectStartDate').value = today();
+  document.getElementById('projectModalTitle').textContent = id ? 'تعديل المشروع' : 'مشروع جديد';
+  if (id) {
+    const p = DB.get('projects').find(x => x.id === id);
+    if (p) {
+      document.getElementById('projectId').value = p.id;
+      document.getElementById('projectName').value = p.name||'';
+      document.getElementById('projectCompany').value = p.company||'';
+      document.getElementById('projectContractValue').value = p.contractValue||'';
+      document.getElementById('projectUnits').value = p.units||'';
+      document.getElementById('projectUnitPrice').value = p.unitPrice||'';
+      document.getElementById('projectStatus').value = p.status||'active';
+      document.getElementById('projectStartDate').value = p.startDate||'';
+      document.getElementById('projectEndDate').value = p.endDate||'';
+      document.getElementById('projectNotes').value = p.notes||'';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('projectModal')).show();
+}
+
+function saveProject() {
+  const name = document.getElementById('projectName').value.trim();
+  const company = document.getElementById('projectCompany').value.trim();
+  const contractValue = document.getElementById('projectContractValue').value;
+  if (!name || !company || !contractValue) { showToast('يرجى ملء الحقول المطلوبة','danger'); return; }
+  const projects = DB.get('projects');
+  const id = document.getElementById('projectId').value;
+  const data = {
+    name, company, contractValue: Number(contractValue),
+    units: Number(document.getElementById('projectUnits').value||0),
+    unitPrice: Number(document.getElementById('projectUnitPrice').value||0),
+    status: document.getElementById('projectStatus').value,
+    startDate: document.getElementById('projectStartDate').value,
+    endDate: document.getElementById('projectEndDate').value,
+    notes: document.getElementById('projectNotes').value,
+    createdAt: new Date().toISOString()
+  };
+  if (id) {
+    const idx = projects.findIndex(x => x.id == id);
+    if (idx >= 0) { projects[idx] = {...projects[idx], ...data}; }
+  } else {
+    data.id = uid();
+    projects.push(data);
+  }
+  DB.set('projects', projects);
+  bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+  showToast(id ? 'تم تعديل المشروع' : 'تم إضافة المشروع');
+  renderProjects();
+  populateProjectSelects();
+}
+
+function deleteProject(id) {
+  confirmDelete('هل تريد حذف هذا المشروع؟', () => {
+    DB.set('projects', DB.get('projects').filter(x => x.id !== id));
+    showToast('تم الحذف', 'warning');
+    renderProjects();
+    populateProjectSelects();
+  });
+}
+
+function renderProjects() {
+  const q = (document.getElementById('searchProjects')?.value||'').toLowerCase();
+  const projects = DB.get('projects').filter(p =>
+    !q || p.name.toLowerCase().includes(q) || (p.company||'').toLowerCase().includes(q)
+  );
+  const payments = DB.get('payments');
+  const disbursements = DB.get('disbursements');
+  const tbody = document.getElementById('projectsTable');
+  if (!tbody) return;
+  if (!projects.length) {
+    tbody.innerHTML = '';
+    document.getElementById('projectsEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('projectsEmpty')?.classList.add('d-none');
+  tbody.innerHTML = projects.map((p,i) => {
+    const rec = payments.filter(x => x.projectId === p.id).reduce((s,x) => s + Number(x.amount||0), 0);
+    const dis = disbursements.filter(x => x.projectId === p.id).reduce((s,x) => s + Number(x.amount||0), 0);
+    const profit = rec - dis;
+    const statusMap = { active:'badge-active', stopped:'badge-stopped', done:'badge-done' };
+    const statusLabel = { active:'فعال', stopped:'متوقف', done:'مكتمل' };
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.company||'-'}</td>
+      <td>${fmt(p.contractValue)}</td>
+      <td>${p.units||'-'}</td>
+      <td class="text-success">${fmt(rec)}</td>
+      <td class="text-danger">${fmt(dis)}</td>
+      <td class="${profit>=0?'text-success':'text-danger'}">${fmt(profit)}</td>
+      <td><span class="badge-status ${statusMap[p.status]||''}">${statusLabel[p.status]||''}</span></td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" onclick="openProjectModal('${p.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== FINANCIAL STATUS =====
+function renderFinancial() {
+  const projects = DB.get('projects');
+  const payments = DB.get('payments');
+  const disbursements = DB.get('disbursements');
+  const tbody = document.getElementById('financialTable');
+  if (!tbody) return;
+  tbody.innerHTML = projects.map(p => {
+    const rec = payments.filter(x => x.projectId === p.id).reduce((s,x) => s + Number(x.amount||0), 0);
+    const dis = disbursements.filter(x => x.projectId === p.id).reduce((s,x) => s + Number(x.amount||0), 0);
+    const remaining = Number(p.contractValue||0) - rec;
+    const profit = rec - dis;
+    const completed = p.completedUnits || 0;
+    const pct = p.units ? Math.min(100, Math.round(completed/p.units*100)) : (p.contractValue ? Math.min(100,Math.round(rec/p.contractValue*100)) : 0);
+    return `<tr>
+      <td><strong>${p.name}</strong></td>
+      <td>${fmt(p.contractValue)}</td>
+      <td>${p.units||'-'}</td>
+      <td>${completed||'-'}</td>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <div class="progress flex-grow-1" style="height:6px;min-width:60px">
+            <div class="progress-bar bg-primary" style="width:${pct}%"></div>
+          </div>
+          <span style="font-size:0.82rem;white-space:nowrap">${pct}%</span>
+        </div>
+      </td>
+      <td class="text-success">${fmt(rec)}</td>
+      <td class="text-danger">${fmt(dis)}</td>
+      <td class="text-warning">${fmt(remaining)}</td>
+      <td class="${profit>=0?'text-success':'text-danger'}">${fmt(profit)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="text-center text-muted py-4">لا توجد مشاريع</td></tr>';
+}
+
+// ===== PAYMENTS =====
+function populateProjectSelects() {
+  const projects = DB.get('projects');
+  const opts = '<option value="">-- اختر مشروع --</option>' + projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  ['paymentProject','receiptProject','disbursementProject','cashFilterProject'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const prev = el.value;
+      el.innerHTML = id === 'cashFilterProject' ? '<option value="">كل المشاريع</option>' + projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('') : opts;
+      el.value = prev;
+    }
+  });
+}
+
+function openPaymentModal(id=null) {
+  populateProjectSelects();
+  ['paymentId','paymentPayer','paymentReceiver','paymentAmount','paymentNotes'].forEach(f => {
+    const el=document.getElementById(f); if(el) el.value='';
+  });
+  document.getElementById('paymentDate').value = today();
+  document.getElementById('paymentMethod').value = 'نقداً';
+  if (id) {
+    const p = DB.get('payments').find(x => x.id === id);
+    if (p) {
+      document.getElementById('paymentId').value = p.id;
+      document.getElementById('paymentProject').value = p.projectId||'';
+      document.getElementById('paymentPayer').value = p.payer||'';
+      document.getElementById('paymentReceiver').value = p.receiver||'';
+      document.getElementById('paymentAmount').value = p.amount||'';
+      document.getElementById('paymentMethod').value = p.method||'نقداً';
+      document.getElementById('paymentDate').value = p.date||'';
+      document.getElementById('paymentNotes').value = p.notes||'';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('paymentModal')).show();
+}
+
+function savePayment() {
+  const payer = document.getElementById('paymentPayer').value.trim();
+  const amount = document.getElementById('paymentAmount').value;
+  if (!payer || !amount) { showToast('يرجى ملء الحقول المطلوبة','danger'); return; }
+  const payments = DB.get('payments');
+  const id = document.getElementById('paymentId').value;
+  const data = {
+    projectId: document.getElementById('paymentProject').value,
+    payer, receiver: document.getElementById('paymentReceiver').value,
+    amount: Number(amount), method: document.getElementById('paymentMethod').value,
+    date: document.getElementById('paymentDate').value,
+    time: nowTime(), notes: document.getElementById('paymentNotes').value
+  };
+  if (id) {
+    const idx = payments.findIndex(x => x.id == id);
+    if (idx>=0) payments[idx] = {...payments[idx], ...data};
+  } else {
+    data.id = uid();
+    data.opNum = 'PMT-' + (payments.length+1).toString().padStart(4,'0');
+    payments.push(data);
+  }
+  DB.set('payments', payments);
+  bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+  showToast('تم حفظ الدفعة');
+  renderPayments();
+}
+
+function deletePayment(id) {
+  confirmDelete('حذف هذه الدفعة؟', () => {
+    DB.set('payments', DB.get('payments').filter(x => x.id !== id));
+    showToast('تم الحذف','warning');
+    renderPayments();
+  });
+}
+
+function renderPayments() {
+  const q = (document.getElementById('searchPayments')?.value||'').toLowerCase();
+  const payments = DB.get('payments').filter(p =>
+    !q || (p.payer||'').toLowerCase().includes(q) || (p.receiver||'').toLowerCase().includes(q)
+  );
+  const projects = DB.get('projects');
+  const totalContracts = projects.reduce((s,p) => s + Number(p.contractValue||0), 0);
+  const totalReceived = payments.reduce((s,p) => s + Number(p.amount||0), 0);
+
+  document.getElementById('totalPaymentsReceived').textContent = fmt(totalReceived);
+  document.getElementById('totalPaymentsRemaining').textContent = fmt(totalContracts - totalReceived);
+  document.getElementById('totalPaymentsCount').textContent = payments.length;
+
+  const tbody = document.getElementById('paymentsTable');
+  if (!tbody) return;
+  if (!payments.length) {
+    tbody.innerHTML = '';
+    document.getElementById('paymentsEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('paymentsEmpty')?.classList.add('d-none');
+  tbody.innerHTML = payments.map((p,i) => {
+    const proj = projects.find(x => x.id === p.projectId);
+    return `<tr>
+      <td>${p.opNum||i+1}</td>
+      <td>${p.date||'-'}</td><td>${p.time||'-'}</td>
+      <td>${proj?.name||'-'}</td>
+      <td>${p.payer||'-'}</td><td>${p.receiver||'-'}</td>
+      <td class="text-success"><strong>${fmt(p.amount)}</strong></td>
+      <td>${p.method||'-'}</td><td>${p.notes||'-'}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" onclick="openPaymentModal('${p.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deletePayment('${p.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== RECEIPTS =====
+function openReceiptModal(id=null) {
+  populateProjectSelects();
+  ['receiptId','receiptPayer','receiptAmount','receiptNotes','receiptWriter'].forEach(f => {
+    const el=document.getElementById(f); if(el) el.value='';
+  });
+  document.getElementById('receiptDate').value = today();
+  if (id) {
+    const r = DB.get('receipts').find(x => x.id === id);
+    if (r) {
+      document.getElementById('receiptId').value = r.id;
+      document.getElementById('receiptProject').value = r.projectId||'';
+      document.getElementById('receiptPayer').value = r.payer||'';
+      document.getElementById('receiptAmount').value = r.amount||'';
+      document.getElementById('receiptDate').value = r.date||'';
+      document.getElementById('receiptWriter').value = r.writer||'';
+      document.getElementById('receiptNotes').value = r.notes||'';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('receiptModal')).show();
+}
+
+function saveReceipt() {
+  const payer = document.getElementById('receiptPayer').value.trim();
+  const amount = document.getElementById('receiptAmount').value;
+  if (!payer || !amount) { showToast('يرجى ملء الحقول المطلوبة','danger'); return; }
+  const receipts = DB.get('receipts');
+  const id = document.getElementById('receiptId').value;
+  const data = {
+    projectId: document.getElementById('receiptProject').value,
+    payer, amount: Number(amount),
+    date: document.getElementById('receiptDate').value,
+    time: nowTime(),
+    writer: document.getElementById('receiptWriter').value,
+    notes: document.getElementById('receiptNotes').value
+  };
+  if (id) {
+    const idx = receipts.findIndex(x => x.id == id);
+    if (idx>=0) receipts[idx] = {...receipts[idx], ...data};
+  } else {
+    data.id = uid();
+    data.receiptNum = 'RCP-' + (receipts.length+1).toString().padStart(4,'0');
+    receipts.push(data);
+  }
+  DB.set('receipts', receipts);
+  bootstrap.Modal.getInstance(document.getElementById('receiptModal')).hide();
+  showToast('تم حفظ سند القبض');
+  renderReceipts();
+}
+
+function deleteReceipt(id) {
+  confirmDelete('حذف هذا السند؟', () => {
+    DB.set('receipts', DB.get('receipts').filter(x => x.id !== id));
+    showToast('تم الحذف','warning');
+    renderReceipts();
+  });
+}
+
+function printReceipt(id) {
+  const r = DB.get('receipts').find(x => x.id === id);
+  const proj = DB.get('projects').find(x => x.id === r?.projectId);
+  const s = DB.getObj('settings');
+  const html = `
+    <div style="font-family:Cairo,sans-serif;direction:rtl;max-width:500px;margin:0 auto;border:2px solid #1a3a5c;border-radius:12px;padding:24px;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <h3 style="color:#1a3a5c;margin:0">${s.companyName||'شركة المقاولات'}</h3>
+        <h4 style="color:#f0a500;margin:8px 0">سند قبض</h4>
+        <div style="font-size:0.85rem;color:#666">رقم: ${r?.receiptNum||''}</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+        <tr><td style="padding:8px 0;color:#666;width:40%">التاريخ:</td><td><strong>${r?.date||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">الوقت:</td><td><strong>${r?.time||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">المشروع:</td><td><strong>${proj?.name||'-'}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">الجهة الدافعة:</td><td><strong>${r?.payer||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">المبلغ:</td><td><strong style="color:#1e8449;font-size:1.1rem">${fmt(r?.amount)}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">ملاحظات:</td><td>${r?.notes||'-'}</td></tr>
+        <tr><td style="padding:8px 0;color:#666">كاتب السند:</td><td><strong>${r?.writer||''}</strong></td></tr>
+      </table>
+      <div style="margin-top:32px;text-align:left;font-size:0.85rem;color:#666">التوقيع: _______________</div>
+    </div>`;
+  document.getElementById('printContent').innerHTML = html;
+  new bootstrap.Modal(document.getElementById('printModal')).show();
+}
+
+function renderReceipts() {
+  const q = (document.getElementById('searchReceipts')?.value||'').toLowerCase();
+  const receipts = DB.get('receipts').filter(r =>
+    !q || (r.payer||'').toLowerCase().includes(q) || (r.receiptNum||'').toLowerCase().includes(q)
+  );
+  const projects = DB.get('projects');
+  const tbody = document.getElementById('receiptsTable');
+  if (!tbody) return;
+  if (!receipts.length) {
+    tbody.innerHTML = '';
+    document.getElementById('receiptsEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('receiptsEmpty')?.classList.add('d-none');
+  tbody.innerHTML = receipts.map(r => {
+    const proj = projects.find(x => x.id === r.projectId);
+    return `<tr>
+      <td>${r.receiptNum||'-'}</td><td>${r.date||'-'}</td><td>${r.time||'-'}</td>
+      <td>${proj?.name||'-'}</td><td>${r.payer||'-'}</td>
+      <td class="text-success"><strong>${fmt(r.amount)}</strong></td>
+      <td>${r.writer||'-'}</td><td>${r.notes||'-'}</td>
+      <td>
+        <button class="btn btn-info btn-sm me-1" onclick="printReceipt('${r.id}')"><i class="fas fa-print"></i></button>
+        <button class="btn btn-warning btn-sm me-1" onclick="openReceiptModal('${r.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReceipt('${r.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== DISBURSEMENTS =====
+function openDisbursementModal(id=null) {
+  populateProjectSelects();
+  ['disbursementId','disbursementBeneficiary','disbursementAmount','disbursementReason','disbursementWriter','disbursementNotes'].forEach(f => {
+    const el=document.getElementById(f); if(el) el.value='';
+  });
+  document.getElementById('disbursementDate').value = today();
+  if (id) {
+    const d = DB.get('disbursements').find(x => x.id === id);
+    if (d) {
+      document.getElementById('disbursementId').value = d.id;
+      document.getElementById('disbursementProject').value = d.projectId||'';
+      document.getElementById('disbursementBeneficiary').value = d.beneficiary||'';
+      document.getElementById('disbursementAmount').value = d.amount||'';
+      document.getElementById('disbursementDate').value = d.date||'';
+      document.getElementById('disbursementReason').value = d.reason||'';
+      document.getElementById('disbursementWriter').value = d.writer||'';
+      document.getElementById('disbursementNotes').value = d.notes||'';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('disbursementModal')).show();
+}
+
+function saveDisbursement() {
+  const beneficiary = document.getElementById('disbursementBeneficiary').value.trim();
+  const amount = document.getElementById('disbursementAmount').value;
+  const reason = document.getElementById('disbursementReason').value.trim();
+  if (!beneficiary || !amount || !reason) { showToast('يرجى ملء الحقول المطلوبة','danger'); return; }
+  const disbursements = DB.get('disbursements');
+  const id = document.getElementById('disbursementId').value;
+  const data = {
+    projectId: document.getElementById('disbursementProject').value,
+    beneficiary, amount: Number(amount), reason,
+    date: document.getElementById('disbursementDate').value,
+    time: nowTime(),
+    writer: document.getElementById('disbursementWriter').value,
+    notes: document.getElementById('disbursementNotes').value
+  };
+  if (id) {
+    const idx = disbursements.findIndex(x => x.id == id);
+    if (idx>=0) disbursements[idx] = {...disbursements[idx], ...data};
+  } else {
+    data.id = uid();
+    data.disbNum = 'DSB-' + (disbursements.length+1).toString().padStart(4,'0');
+    disbursements.push(data);
+  }
+  DB.set('disbursements', disbursements);
+  bootstrap.Modal.getInstance(document.getElementById('disbursementModal')).hide();
+  showToast('تم حفظ سند الصرف');
+  renderDisbursements();
+}
+
+function deleteDisbursement(id) {
+  confirmDelete('حذف هذا السند؟', () => {
+    DB.set('disbursements', DB.get('disbursements').filter(x => x.id !== id));
+    showToast('تم الحذف','warning');
+    renderDisbursements();
+  });
+}
+
+function printDisbursement(id) {
+  const d = DB.get('disbursements').find(x => x.id === id);
+  const proj = DB.get('projects').find(x => x.id === d?.projectId);
+  const s = DB.getObj('settings');
+  const html = `
+    <div style="font-family:Cairo,sans-serif;direction:rtl;max-width:500px;margin:0 auto;border:2px solid #c0392b;border-radius:12px;padding:24px;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <h3 style="color:#1a3a5c;margin:0">${s.companyName||'شركة المقاولات'}</h3>
+        <h4 style="color:#c0392b;margin:8px 0">سند صرف</h4>
+        <div style="font-size:0.85rem;color:#666">رقم: ${d?.disbNum||''}</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+        <tr><td style="padding:8px 0;color:#666;width:40%">التاريخ:</td><td><strong>${d?.date||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">الوقت:</td><td><strong>${d?.time||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">المشروع:</td><td><strong>${proj?.name||'-'}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">المستفيد:</td><td><strong>${d?.beneficiary||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">سبب الصرف:</td><td><strong>${d?.reason||''}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">المبلغ:</td><td><strong style="color:#c0392b;font-size:1.1rem">${fmt(d?.amount)}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#666">ملاحظات:</td><td>${d?.notes||'-'}</td></tr>
+        <tr><td style="padding:8px 0;color:#666">كاتب السند:</td><td><strong>${d?.writer||''}</strong></td></tr>
+      </table>
+      <div style="margin-top:32px;text-align:left;font-size:0.85rem;color:#666">التوقيع: _______________</div>
+    </div>`;
+  document.getElementById('printContent').innerHTML = html;
+  new bootstrap.Modal(document.getElementById('printModal')).show();
+}
+
+function renderDisbursements() {
+  const q = (document.getElementById('searchDisbursements')?.value||'').toLowerCase();
+  const disbursements = DB.get('disbursements').filter(d =>
+    !q || (d.beneficiary||'').toLowerCase().includes(q) || (d.reason||'').toLowerCase().includes(q)
+  );
+  const projects = DB.get('projects');
+  const tbody = document.getElementById('disbursementsTable');
+  if (!tbody) return;
+  if (!disbursements.length) {
+    tbody.innerHTML = '';
+    document.getElementById('disbursementsEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('disbursementsEmpty')?.classList.add('d-none');
+  tbody.innerHTML = disbursements.map(d => {
+    const proj = projects.find(x => x.id === d.projectId);
+    return `<tr>
+      <td>${d.disbNum||'-'}</td><td>${d.date||'-'}</td><td>${d.time||'-'}</td>
+      <td>${proj?.name||'-'}</td><td>${d.beneficiary||'-'}</td>
+      <td class="text-danger"><strong>${fmt(d.amount)}</strong></td>
+      <td>${d.reason||'-'}</td><td>${d.writer||'-'}</td>
+      <td>
+        <button class="btn btn-info btn-sm me-1" onclick="printDisbursement('${d.id}')"><i class="fas fa-print"></i></button>
+        <button class="btn btn-warning btn-sm me-1" onclick="openDisbursementModal('${d.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteDisbursement('${d.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== CASHBOX =====
+function renderCashbox() {
+  const filterProject = document.getElementById('cashFilterProject')?.value||'';
+  const filterFrom = document.getElementById('cashFilterFrom')?.value||'';
+  const filterTo = document.getElementById('cashFilterTo')?.value||'';
+  const projects = DB.get('projects');
+
+  let movements = [];
+  DB.get('payments').forEach(p => movements.push({
+    date:p.date, time:p.time||'', type:'in', typeLabel:'استلام دفعة',
+    projectId:p.projectId, desc:p.payer||'', amount:Number(p.amount||0)
+  }));
+  DB.get('receipts').forEach(r => movements.push({
+    date:r.date, time:r.time||'', type:'in', typeLabel:'سند قبض',
+    projectId:r.projectId, desc:r.payer||'', amount:Number(r.amount||0)
+  }));
+  DB.get('disbursements').forEach(d => movements.push({
+    date:d.date, time:d.time||'', type:'out', typeLabel:'سند صرف',
+    projectId:d.projectId, desc:d.beneficiary||'', amount:Number(d.amount||0)
+  }));
+
+  movements.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+
+  // Totals (unfiltered for balance)
+  const totalIn = movements.filter(m=>m.type==='in').reduce((s,m)=>s+m.amount,0);
+  const totalOut = movements.filter(m=>m.type==='out').reduce((s,m)=>s+m.amount,0);
+  document.getElementById('cashTotal').textContent = fmtShort(totalIn);
+  document.getElementById('cashExpenses').textContent = fmtShort(totalOut);
+  document.getElementById('cashBalance').textContent = fmtShort(totalIn - totalOut);
+
+  // Filter
+  if (filterProject) movements = movements.filter(m => m.projectId === filterProject);
+  if (filterFrom) movements = movements.filter(m => m.date >= filterFrom);
+  if (filterTo) movements = movements.filter(m => m.date <= filterTo);
+
+  let running = 0;
+  const tbody = document.getElementById('cashboxTable');
+  if (!tbody) return;
+  tbody.innerHTML = movements.map(m => {
+    const proj = projects.find(x => x.id === m.projectId);
+    if (m.type==='in') running += m.amount;
+    else running -= m.amount;
+    return `<tr>
+      <td>${m.date||'-'} ${m.time||''}</td>
+      <td><span class="badge-status ${m.type==='in'?'badge-active':'badge-unpaid'}">${m.typeLabel}</span></td>
+      <td>${proj?.name||'-'}</td>
+      <td>${m.desc||'-'}</td>
+      <td class="text-success">${m.type==='in'?fmt(m.amount):'-'}</td>
+      <td class="text-danger">${m.type==='out'?fmt(m.amount):'-'}</td>
+      <td class="${running>=0?'text-primary':'text-danger'}"><strong>${fmt(running)}</strong></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" class="text-center text-muted py-4">لا توجد حركات</td></tr>';
+}
+
+// ===== CONTRACTORS =====
+function toggleContractorType() {
+  const t = document.getElementById('contractorType').value;
+  document.getElementById('contractorMeterPriceDiv').style.display = t==='meter'?'':'none';
+  document.getElementById('contractorMetersDiv').style.display = t==='meter'?'':'none';
+  document.getElementById('contractorLumpDiv').style.display = t==='lump'?'':'none';
+}
+
+function openContractorModal(id=null) {
+  ['contractorId','contractorName','contractorPhone','contractorMeterPrice',
+   'contractorMeters','contractorLumpSum','contractorHouses','contractorPaid','contractorNotes'].forEach(f => {
+    const el=document.getElementById(f); if(el) el.value='';
+  });
+  document.getElementById('contractorType').value = 'meter';
+  document.getElementById('contractorModalTitle').textContent = id ? 'تعديل مقاول' : 'مقاول جديد';
+  toggleContractorType();
+  if (id) {
+    const c = DB.get('contractors').find(x => x.id === id);
+    if (c) {
+      document.getElementById('contractorId').value = c.id;
+      document.getElementById('contractorName').value = c.name||'';
+      document.getElementById('contractorPhone').value = c.phone||'';
+      document.getElementById('contractorType').value = c.type||'meter';
+      document.getElementById('contractorMeterPrice').value = c.meterPrice||'';
+      document.getElementById('contractorMeters').value = c.meters||'';
+      document.getElementById('contractorLumpSum').value = c.lumpSum||'';
+      document.getElementById('contractorHouses').value = c.houses||'';
+      document.getElementById('contractorPaid').value = c.paid||'';
+      document.getElementById('contractorNotes').value = c.notes||'';
+      toggleContractorType();
+    }
+  }
+  new bootstrap.Modal(document.getElementById('contractorModal')).show();
+}
+
+function saveContractor() {
+  const name = document.getElementById('contractorName').value.trim();
+  if (!name) { showToast('يرجى إدخال اسم المقاول','danger'); return; }
+  const contractors = DB.get('contractors');
+  const id = document.getElementById('contractorId').value;
+  const type = document.getElementById('contractorType').value;
+  const data = {
+    name, phone: document.getElementById('contractorPhone').value, type,
+    meterPrice: Number(document.getElementById('contractorMeterPrice').value||0),
+    meters: Number(document.getElementById('contractorMeters').value||0),
+    lumpSum: Number(document.getElementById('contractorLumpSum').value||0),
+    houses: Number(document.getElementById('contractorHouses').value||0),
+    paid: Number(document.getElementById('contractorPaid').value||0),
+    notes: document.getElementById('contractorNotes').value
+  };
+  if (id) {
+    const idx = contractors.findIndex(x => x.id == id);
+    if (idx>=0) contractors[idx] = {...contractors[idx], ...data};
+  } else {
+    data.id = uid();
+    contractors.push(data);
+  }
+  DB.set('contractors', contractors);
+  bootstrap.Modal.getInstance(document.getElementById('contractorModal')).hide();
+  showToast(id ? 'تم التعديل' : 'تم إضافة المقاول');
+  renderContractors();
+}
+
+function deleteContractor(id) {
+  confirmDelete('حذف هذا المقاول؟', () => {
+    DB.set('contractors', DB.get('contractors').filter(x => x.id !== id));
+    showToast('تم الحذف','warning');
+    renderContractors();
+  });
+}
+
+function renderContractors() {
+  const q = (document.getElementById('searchContractors')?.value||'').toLowerCase();
+  const contractors = DB.get('contractors').filter(c =>
+    !q || (c.name||'').toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('contractorsTable');
+  if (!tbody) return;
+  if (!contractors.length) {
+    tbody.innerHTML = '';
+    document.getElementById('contractorsEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('contractorsEmpty')?.classList.add('d-none');
+  tbody.innerHTML = contractors.map((c,i) => {
+    const total = c.type==='meter' ? c.meterPrice*c.meters : c.lumpSum;
+    const remaining = total - c.paid;
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.phone||'-'}</td>
+      <td>${c.type==='meter'?'على المتر':'مقطوعية'}</td>
+      <td>${fmt(total)}</td>
+      <td class="text-danger">${fmt(c.paid)}</td>
+      <td class="${remaining>=0?'text-warning':'text-danger'}">${fmt(remaining)}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" onclick="openContractorModal('${c.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteContractor('${c.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== EMPLOYEES =====
+function openEmployeeModal(id=null) {
+  ['employeeId','employeeName','employeeTitle','employeeLocation','employeeSalary',
+   'employeeStartDate','employeePayDate','employeeAttendance','employeeLeave',
+   'employeeAbsence','employeeDeductions','employeeBonuses'].forEach(f => {
+    const el=document.getElementById(f); if(el) el.value='';
+  });
+  document.getElementById('employeeStatus').value = 'active';
+  document.getElementById('employeePayStatus').value = 'unpaid';
+  document.getElementById('employeeModalTitle').textContent = id ? 'تعديل موظف' : 'موظف جديد';
+  if (id) {
+    const e = DB.get('employees').find(x => x.id === id);
+    if (e) {
+      document.getElementById('employeeId').value = e.id;
+      document.getElementById('employeeName').value = e.name||'';
+      document.getElementById('employeeTitle').value = e.title||'';
+      document.getElementById('employeeLocation').value = e.location||'';
+      document.getElementById('employeeSalary').value = e.salary||'';
+      document.getElementById('employeeStartDate').value = e.startDate||'';
+      document.getElementById('employeePayDate').value = e.payDate||'';
+      document.getElementById('employeeStatus').value = e.status||'active';
+      document.getElementById('employeeAttendance').value = e.attendance||'';
+      document.getElementById('employeeLeave').value = e.leave||'';
+      document.getElementById('employeeAbsence').value = e.absence||'';
+      document.getElementById('employeeDeductions').value = e.deductions||'';
+      document.getElementById('employeeBonuses').value = e.bonuses||'';
+      document.getElementById('employeePayStatus').value = e.payStatus||'unpaid';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('employeeModal')).show();
+}
+
+function saveEmployee() {
+  const name = document.getElementById('employeeName').value.trim();
+  const salary = document.getElementById('employeeSalary').value;
+  if (!name || !salary) { showToast('يرجى ملء الحقول المطلوبة','danger'); return; }
+  const employees = DB.get('employees');
+  const id = document.getElementById('employeeId').value;
+  const deductions = Number(document.getElementById('employeeDeductions').value||0);
+  const bonuses = Number(document.getElementById('employeeBonuses').value||0);
+  const netSalary = Number(salary) - deductions + bonuses;
+  const data = {
+    name, title: document.getElementById('employeeTitle').value,
+    location: document.getElementById('employeeLocation').value,
+    salary: Number(salary), netSalary,
+    startDate: document.getElementById('employeeStartDate').value,
+    payDate: document.getElementById('employeePayDate').value,
+    status: document.getElementById('employeeStatus').value,
+    attendance: Number(document.getElementById('employeeAttendance').value||0),
+    leave: Number(document.getElementById('employeeLeave').value||0),
+    absence: Number(document.getElementById('employeeAbsence').value||0),
+    deductions, bonuses,
+    payStatus: document.getElementById('employeePayStatus').value
+  };
+  if (id) {
+    const idx = employees.findIndex(x => x.id == id);
+    if (idx>=0) employees[idx] = {...employees[idx], ...data};
+  } else {
+    data.id = uid();
+    employees.push(data);
+  }
+  DB.set('employees', employees);
+  bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+  showToast(id ? 'تم التعديل' : 'تم إضافة الموظف');
+  renderEmployees();
+}
+
+function deleteEmployee(id) {
+  confirmDelete('حذف هذا الموظف؟', () => {
+    DB.set('employees', DB.get('employees').filter(x => x.id !== id));
+    showToast('تم الحذف','warning');
+    renderEmployees();
+  });
+}
+
+function renderEmployees() {
+  const q = (document.getElementById('searchEmployees')?.value||'').toLowerCase();
+  const employees = DB.get('employees').filter(e =>
+    !q || (e.name||'').toLowerCase().includes(q) || (e.title||'').toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('employeesTable');
+  if (!tbody) return;
+  if (!employees.length) {
+    tbody.innerHTML = '';
+    document.getElementById('employeesEmpty')?.classList.remove('d-none');
+    return;
+  }
+  document.getElementById('employeesEmpty')?.classList.add('d-none');
+  tbody.innerHTML = employees.map((e,i) => `<tr>
+    <td>${i+1}</td>
+    <td><strong>${e.name}</strong></td>
+    <td>${e.title||'-'}</td>
+    <td>${e.location||'-'}</td>
+    <td>${fmt(e.salary)}</td>
+    <td><span class="badge-status ${e.status==='active'?'badge-active':'badge-stopped'}">${e.status==='active'?'فعال':'غير فعال'}</span></td>
+    <td>
+      <button class="btn btn-warning btn-sm me-1" onclick="openEmployeeModal('${e.id}')"><i class="fas fa-edit"></i></button>
+      <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${e.id}')"><i class="fas fa-trash"></i></button>
+    </td>
+  </tr>`).join('');
+}
+
+// ===== REPORTS =====
+function generateReport(type) {
+  const out = document.getElementById('reportOutput');
+  const s = DB.getObj('settings');
+  const projects = DB.get('projects');
+  const payments = DB.get('payments');
+  const disbursements = DB.get('disbursements');
+  const employees = DB.get('employees');
+  const contractors = DB.get('contractors');
+
+  let html = '';
+
+  if (type === 'pl') {
+    const totalRec = payments.reduce((s,p) => s+Number(p.amount||0), 0);
+    const totalDisb = disbursements.reduce((s,d) => s+Number(d.amount||0), 0);
+    const net = totalRec - totalDisb;
+    html = `<div class="card"><div class="card-header"><h5><i class="fas fa-chart-line"></i> تقرير الأرباح والخسائر</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('reportOutput')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4"><div class="stat-card green" style="padding:16px"><div class="stat-icon"><i class="fas fa-arrow-down"></i></div><div class="stat-value">${fmtShort(totalRec)}</div><div class="stat-label">إجمالي الإيرادات</div></div></div>
+          <div class="col-md-4"><div class="stat-card red" style="padding:16px"><div class="stat-icon"><i class="fas fa-arrow-up"></i></div><div class="stat-value">${fmtShort(totalDisb)}</div><div class="stat-label">إجمالي المصروفات</div></div></div>
+          <div class="col-md-4"><div class="stat-card ${net>=0?'green':'red'}" style="padding:16px"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-value">${fmtShort(net)}</div><div class="stat-label">صافي ${net>=0?'الربح':'الخسارة'}</div></div></div>
+        </div>
+        <div class="table-wrapper mt-3"><table class="table"><thead><tr><th>المشروع</th><th>المقبوض</th><th>المصروف</th><th>الربح/الخسارة</th></tr></thead><tbody>
+        ${projects.map(p => {
+          const r = payments.filter(x=>x.projectId===p.id).reduce((s,x)=>s+Number(x.amount||0),0);
+          const d = disbursements.filter(x=>x.projectId===p.id).reduce((s,x)=>s+Number(x.amount||0),0);
+          const n = r-d;
+          return `<tr><td>${p.name}</td><td class="text-success">${fmt(r)}</td><td class="text-danger">${fmt(d)}</td><td class="${n>=0?'text-success':'text-danger'}">${fmt(n)}</td></tr>`;
+        }).join('')}
+        </tbody></table></div>
+      </div></div>`;
+  } else if (type === 'salaries') {
+    const total = employees.reduce((s,e)=>s+Number(e.netSalary||e.salary||0),0);
+    html = `<div class="card"><div class="card-header"><h5><i class="fas fa-money-check-alt"></i> تقرير الرواتب</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('reportOutput')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+      <div class="table-wrapper"><table class="table"><thead><tr><th>#</th><th>الاسم</th><th>المسمى</th><th>الراتب الأساسي</th><th>خصومات</th><th>مكافآت</th><th>صافي الراتب</th><th>حالة الصرف</th></tr></thead><tbody>
+      ${employees.map((e,i)=>`<tr><td>${i+1}</td><td>${e.name}</td><td>${e.title||'-'}</td><td>${fmt(e.salary)}</td><td class="text-danger">${fmt(e.deductions)}</td><td class="text-success">${fmt(e.bonuses)}</td><td><strong>${fmt(e.netSalary||e.salary)}</strong></td><td><span class="badge-status ${e.payStatus==='paid'?'badge-paid':'badge-unpaid'}">${e.payStatus==='paid'?'تم الصرف':'لم يُصرف'}</span></td></tr>`).join('')}
+      <tr style="background:#f8f9fa"><td colspan="6"><strong>الإجمالي</strong></td><td><strong>${fmt(total)}</strong></td><td></td></tr>
+      </tbody></table></div></div>`;
+  } else if (type === 'receipts') {
+    const total = DB.get('receipts').reduce((s,r)=>s+Number(r.amount||0),0);
+    html = `<div class="card"><div class="card-header"><h5><i class="fas fa-file-invoice-dollar"></i> تقرير المقبوضات</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('reportOutput')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+      <div class="table-wrapper"><table class="table"><thead><tr><th>رقم السند</th><th>التاريخ</th><th>الجهة</th><th>المبلغ</th><th>ملاحظات</th></tr></thead><tbody>
+      ${DB.get('receipts').map(r=>`<tr><td>${r.receiptNum||'-'}</td><td>${r.date||'-'}</td><td>${r.payer||'-'}</td><td class="text-success">${fmt(r.amount)}</td><td>${r.notes||'-'}</td></tr>`).join('')}
+      <tr style="background:#f8f9fa"><td colspan="3"><strong>الإجمالي</strong></td><td><strong class="text-success">${fmt(total)}</strong></td><td></td></tr>
+      </tbody></table></div></div>`;
+  } else if (type === 'expenses') {
+    const total = disbursements.reduce((s,d)=>s+Number(d.amount||0),0);
+    html = `<div class="card"><div class="card-header"><h5><i class="fas fa-file-invoice"></i> تقرير المصروفات</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('reportOutput')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+      <div class="table-wrapper"><table class="table"><thead><tr><th>رقم السند</th><th>التاريخ</th><th>المستفيد</th><th>السبب</th><th>المبلغ</th></tr></thead><tbody>
+      ${disbursements.map(d=>`<tr><td>${d.disbNum||'-'}</td><td>${d.date||'-'}</td><td>${d.beneficiary||'-'}</td><td>${d.reason||'-'}</td><td class="text-danger">${fmt(d.amount)}</td></tr>`).join('')}
+      <tr style="background:#f8f9fa"><td colspan="4"><strong>الإجمالي</strong></td><td><strong class="text-danger">${fmt(total)}</strong></td></tr>
+      </tbody></table></div></div>`;
+  } else if (type === 'project') {
+    html = `<div class="card"><div class="card-body"><label class="form-label">اختر مشروعاً</label>
+      <select class="form-select mb-3" id="reportProjectSel">${projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+      <button class="btn btn-primary" onclick="showProjectReport(document.getElementById('reportProjectSel').value)">عرض التقرير</button>
+      </div></div><div id="projectReportOut" class="mt-3"></div>`;
+  } else if (type === 'contractor') {
+    html = `<div class="card"><div class="card-body"><label class="form-label">اختر مقاولاً</label>
+      <select class="form-select mb-3" id="reportContractorSel">${contractors.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
+      <button class="btn btn-primary" onclick="showContractorReport(document.getElementById('reportContractorSel').value)">عرض التقرير</button>
+      </div></div><div id="contractorReportOut" class="mt-3"></div>`;
+  } else if (type === 'employee') {
+    html = `<div class="card"><div class="card-body"><label class="form-label">اختر موظفاً</label>
+      <select class="form-select mb-3" id="reportEmployeeSel">${employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}</select>
+      <button class="btn btn-primary" onclick="showEmployeeReport(document.getElementById('reportEmployeeSel').value)">عرض التقرير</button>
+      </div></div><div id="employeeReportOut" class="mt-3"></div>`;
+  }
+  out.innerHTML = html;
+  out.scrollIntoView({behavior:'smooth'});
+}
+
+function showProjectReport(id) {
+  const p = DB.get('projects').find(x => x.id === id);
+  if (!p) return;
+  const pays = DB.get('payments').filter(x => x.projectId === id);
+  const disbs = DB.get('disbursements').filter(x => x.projectId === id);
+  const totalRec = pays.reduce((s,x)=>s+Number(x.amount||0),0);
+  const totalDisb = disbs.reduce((s,x)=>s+Number(x.amount||0),0);
+  document.getElementById('projectReportOut').innerHTML = `
+    <div class="card"><div class="card-header"><h5><i class="fas fa-project-diagram"></i> كشف حساب: ${p.name}</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('projectReportOut')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+    <div class="card-body">
+      <div class="row g-3 mb-3">
+        <div class="col-md-3"><div class="summary-row"><div class="val">${fmt(p.contractValue)}</div><div class="lbl">قيمة العقد</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-success">${fmt(totalRec)}</div><div class="lbl">إجمالي المستلم</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-danger">${fmt(totalDisb)}</div><div class="lbl">إجمالي المصروف</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val ${totalRec-totalDisb>=0?'text-success':'text-danger'}">${fmt(totalRec-totalDisb)}</div><div class="lbl">صافي الربح</div></div></div>
+      </div>
+      <h6 class="mt-3 mb-2" style="color:var(--primary);font-weight:700">الدفعات المستلمة</h6>
+      <div class="table-wrapper"><table class="table"><thead><tr><th>التاريخ</th><th>الجهة</th><th>المستلم</th><th>المبلغ</th><th>طريقة الدفع</th></tr></thead>
+      <tbody>${pays.map(x=>`<tr><td>${x.date||'-'}</td><td>${x.payer||'-'}</td><td>${x.receiver||'-'}</td><td class="text-success">${fmt(x.amount)}</td><td>${x.method||'-'}</td></tr>`).join('')||'<tr><td colspan="5" class="text-center text-muted">لا توجد دفعات</td></tr>'}</tbody></table></div>
+      <h6 class="mt-3 mb-2" style="color:var(--primary);font-weight:700">سندات الصرف</h6>
+      <div class="table-wrapper"><table class="table"><thead><tr><th>التاريخ</th><th>المستفيد</th><th>السبب</th><th>المبلغ</th></tr></thead>
+      <tbody>${disbs.map(x=>`<tr><td>${x.date||'-'}</td><td>${x.beneficiary||'-'}</td><td>${x.reason||'-'}</td><td class="text-danger">${fmt(x.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="text-center text-muted">لا توجد مصروفات</td></tr>'}</tbody></table></div>
+    </div></div>`;
+}
+
+function showContractorReport(id) {
+  const c = DB.get('contractors').find(x => x.id === id);
+  if (!c) return;
+  const total = c.type==='meter' ? c.meterPrice*c.meters : c.lumpSum;
+  document.getElementById('contractorReportOut').innerHTML = `
+    <div class="card"><div class="card-header"><h5><i class="fas fa-user-tie"></i> كشف حساب: ${c.name}</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('contractorReportOut')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3"><div class="summary-row"><div class="val">${c.type==='meter'?'على المتر':'مقطوعية'}</div><div class="lbl">نوع التعاقد</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val">${fmt(total)}</div><div class="lbl">إجمالي العقد</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-danger">${fmt(c.paid)}</div><div class="lbl">المصروف</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-warning">${fmt(total-c.paid)}</div><div class="lbl">المتبقي</div></div></div>
+      </div>
+      ${c.type==='meter'?`<div class="mt-3 p-3" style="background:#f8f9fa;border-radius:8px"><strong>سعر المتر:</strong> ${fmt(c.meterPrice)} | <strong>الأمتار المنفذة:</strong> ${c.meters} متر</div>`:''}
+      <div class="mt-3 p-3" style="background:#f8f9fa;border-radius:8px"><strong>عدد البيوت:</strong> ${c.houses||0} | <strong>الهاتف:</strong> ${c.phone||'-'}</div>
+    </div></div>`;
+}
+
+function showEmployeeReport(id) {
+  const e = DB.get('employees').find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('employeeReportOut').innerHTML = `
+    <div class="card"><div class="card-header"><h5><i class="fas fa-user"></i> كشف حساب: ${e.name}</h5>
+      <button class="btn btn-primary btn-sm" onclick="printPage('employeeReportOut')"><i class="fas fa-print me-1"></i>طباعة</button></div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3"><div class="summary-row"><div class="val">${fmt(e.salary)}</div><div class="lbl">الراتب الأساسي</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-danger">${fmt(e.deductions)}</div><div class="lbl">الخصومات</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-success">${fmt(e.bonuses)}</div><div class="lbl">المكافآت</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-primary">${fmt(e.netSalary||e.salary)}</div><div class="lbl">صافي الراتب</div></div></div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-3"><div class="summary-row"><div class="val">${e.attendance||0}</div><div class="lbl">أيام الحضور</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val">${e.leave||0}</div><div class="lbl">أيام الإجازة</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val text-danger">${e.absence||0}</div><div class="lbl">أيام الغياب</div></div></div>
+        <div class="col-md-3"><div class="summary-row"><div class="val"><span class="badge-status ${e.payStatus==='paid'?'badge-paid':'badge-unpaid'}">${e.payStatus==='paid'?'تم الصرف':'لم يُصرف'}</span></div><div class="lbl">حالة الصرف</div></div></div>
+      </div>
+    </div></div>`;
+}
+
+// ===== SETTINGS =====
+function loadSettings() {
+  const s = DB.getObj('settings');
+  document.getElementById('settingCompanyName').value = s.companyName||'';
+  document.getElementById('settingCompanyAddress').value = s.companyAddress||'';
+  document.getElementById('settingCurrency').value = s.currency||'IQD';
+}
+
+function saveSettings() {
+  DB.set('settings', {
+    companyName: document.getElementById('settingCompanyName').value,
+    companyAddress: document.getElementById('settingCompanyAddress').value,
+    currency: document.getElementById('settingCurrency').value
+  });
+  showToast('تم حفظ الإعدادات');
+}
+
+// ===== USERS =====
+function openUserModal() {
+  ['newUsername','newPassword'].forEach(f => { document.getElementById(f).value=''; });
+  document.getElementById('newRole').value = 'user';
+  new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
+function saveUser() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value.trim();
+  if (!username || !password) { showToast('يرجى ملء جميع الحقول','danger'); return; }
+  const users = DB.get('users');
+  if (users.find(u => u.username === username)) { showToast('اسم المستخدم موجود مسبقاً','danger'); return; }
+  users.push({ id: uid(), username, password, role: document.getElementById('newRole').value });
+  DB.set('users', users);
+  bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+  showToast('تم إضافة المستخدم');
+  renderUsers();
+}
+
+function deleteUser(id) {
+  if (id == 1) { showToast('لا يمكن حذف مدير النظام الرئيسي','danger'); return; }
+  confirmDelete('حذف هذا المستخدم؟', () => {
+    DB.set('users', DB.get('users').filter(x => x.id != id));
+    showToast('تم الحذف','warning');
+    renderUsers();
+  });
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('usersTable');
+  if (!tbody) return;
+  tbody.innerHTML = DB.get('users').map((u,i) => `<tr>
+    <td>${i+1}</td><td>${u.username}</td>
+    <td>${u.role==='admin'?'مدير النظام':'مستخدم'}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td>
+  </tr>`).join('');
+}
+
+// ===== PRINT =====
+function printPage(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const s = DB.getObj('settings');
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      body{font-family:Cairo,sans-serif;padding:20px;color:#333}
+      table{width:100%;border-collapse:collapse;margin-bottom:16px}
+      th{background:#1a3a5c;color:#fff;padding:8px 10px}
+      td{padding:7px 10px;border-bottom:1px solid #eee}
+      .stat-card{padding:12px;border-radius:8px;margin:4px;color:#fff;display:inline-block;min-width:140px}
+      .green{background:#27ae60}.red{background:#e74c3c}.blue{background:#1a3a5c}
+      .summary-row{background:#f8f9fa;padding:12px;border-radius:8px;margin:4px}
+      .badge-status{padding:3px 10px;border-radius:12px;font-size:0.8rem}
+      .badge-active{background:#d5f5e3;color:#1e8449}.badge-unpaid{background:#fadbd8;color:#c0392b}
+      .badge-paid{background:#d5f5e3;color:#1e8449}.badge-stopped{background:#fdebd0;color:#d35400}
+      @media print{body{padding:10px}}
+    </style>
+    <title>${s.companyName||'تقرير'}</title>
+  </head><body>
+    <div style="text-align:center;margin-bottom:20px;border-bottom:2px solid #1a3a5c;padding-bottom:12px">
+      <h2 style="color:#1a3a5c;margin:0">${s.companyName||'شركة المقاولات'}</h2>
+      <div style="font-size:0.85rem;color:#666">${new Date().toLocaleDateString('ar-IQ',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+    </div>
+    ${el.innerHTML}
+  </body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// ===== BACKUP =====
+function exportBackup() {
+  const data = {};
+  ['projects','payments','receipts','disbursements','contractors','employees','users','settings'].forEach(k => {
+    data[k] = DB.get(k, k==='settings'?{}:[]);
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'backup-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  showToast('تم تصدير النسخة الاحتياطية');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      ['projects','payments','receipts','disbursements','contractors','employees','users','settings'].forEach(k => {
+        if (data[k] !== undefined) DB.set(k, data[k]);
+      });
+      showToast('تم استعادة البيانات بنجاح');
+      renderDashboard();
+    } catch { showToast('خطأ في قراءة الملف','danger'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ===== INIT =====
+initData();
+updateDate();
+setInterval(updateDate, 60000);
+</script>
+</body>
+</html>
