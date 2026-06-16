@@ -58,7 +58,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="g3">
         <div class="fg"><label>&#1575;&#1604;&#1578;&#1575;&#1585;&#1610;&#1582;</label><input type="date" id="d"></div>
         <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1607;&#1606;&#1583;&#1587;</label><input type="text" id="e" placeholder="م. فيصل"></div>
-        <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1588;&#1585;&#1608;&#1593;</label><input type="text" id="p" placeholder="&#1605;&#1580;&#1605;&#1593; &#1575;&#1604;&#1581;&#1610;"></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label>&#1585;&#1602;&#1605; &#1575;&#1604;&#1576;&#1604;&#1608;&#1603;</label><input type="text" id="blk" placeholder="&#1605;&#1579;&#1575;&#1604;: &#1576;&#1604;&#1608;&#1603; 25"></div>
+        <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1588;&#1585;&#1608;&#1593;</label><input type="text" id="p" placeholder="&#1605;&#1580;&#1605;&#1593; &#1575;&#1604;&#1581;&#1610;"></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label id="blk-label">رقم البلوك</label><input type="text" id="blk" placeholder="مثال: بلوك 25"></div>
+</div>
+<div class="grid2" style="margin-top:11px;">
+<div class="fg"><label>نوع المشروع</label>
+<select id="proj-type" onchange="changeProjectType()">
+<option value="بيت">مجمع سكني (بيوت)</option>
+<option value="برج">عمارة / برج (طوابق)</option>
+</select>
+</div>
       </div>
       <div class="fg"><label>&#1581;&#1575;&#1604;&#1577; &#1575;&#1604;&#1605;&#1608;&#1602;&#1593;</label>
         <select id="ss" onchange="chSite()">
@@ -111,6 +119,25 @@ window.addEventListener('DOMContentLoaded', function() {
   for(var i=1;i<=7;i++) addH(i);
 });
 
+function changeProjectType(){
+  var type = document.getElementById('proj-type').value;
+  var blkLabel = document.getElementById('blk-label');
+  var blkInput = document.getElementById('blk');
+  if(type === 'برج'){
+    blkLabel.textContent = 'رقم البرج / العمارة';
+    blkInput.placeholder = 'مثال: برج A';
+  } else {
+    blkLabel.textContent = 'رقم البلوك';
+    blkInput.placeholder = 'مثال: بلوك 25';
+  }
+  var rows = document.querySelectorAll('.hr');
+  rows.forEach(function(row){
+    var label = row.querySelector('.hn');
+    var num = label.textContent.replace('بيت ','').replace('طابق ','');
+    label.textContent = (type === 'برج' ? 'طابق ' : 'بيت ') + num;
+  });
+}
+
 function chSite(){
   var v = document.getElementById('ss').value;
   document.getElementById('sw').style.display = (v==='توقف جزئي'||v==='توقف كامل') ? 'block' : 'none';
@@ -123,7 +150,7 @@ function addH(n){
 
   var num = document.createElement('div');
   num.className = 'hn';
-  num.textContent = 'بيت ' + n;
+  var pt = document.getElementById('proj-type'); num.textContent = (pt && pt.value === 'برج' ? 'طابق ' : 'بيت ') + n;
   row.appendChild(num);
 
   var del = document.createElement('button');
@@ -166,7 +193,7 @@ function addH(n){
 
   // prog
   var fg3 = document.createElement('div'); fg3.className = 'fg';
-  var lb3 = document.createElement('label'); lb3.textContent = 'إنجاز البيت %';
+  var lb3 = document.createElement('label'); lb3.textContent = 'نسبة الإنجاز %';
   var inp3 = document.createElement('input'); inp3.type='text'; inp3.className='h-prog'; inp3.placeholder='مثال: 45%';
   fg3.appendChild(lb3); fg3.appendChild(inp3); g3.appendChild(fg3);
   inner.appendChild(g3);
@@ -207,10 +234,10 @@ function send(){
   var rows=[];
   document.querySelectorAll('.hr').forEach(function(row){
     rows.push({
-      date:date, time:new Date().toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'}), engineer:eng, project:proj, block:document.getElementById('blk').value,
+      date:date, time:new Date().toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'}), engineer:eng, project:proj, block:document.getElementById('blk').value, projType:document.getElementById('proj-type').value,
       siteStatus:document.getElementById('ss').value,
       siteStopReason:document.getElementById('sr').value,
-      houseNum:row.querySelector('.hn').textContent.replace('بيت ',''),
+      houseNum:row.querySelector('.hn').textContent,
       workType:row.querySelector('.h-type').value,
       status:row.querySelector('.h-status').value,
       unitProgress:row.querySelector('.h-prog').value ? row.querySelector('.h-prog').value+'%' : '',
