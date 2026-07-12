@@ -103,6 +103,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
   <button class="sub" id="sb">&#128228; &#1573;&#1585;&#1587;&#1575;&#1604; &#1575;&#1604;&#1578;&#1602;&#1585;&#1610;&#1585;</button>
+<button id="print-btn" onclick="printReport()" style="display:none;width:100%;padding:14px;background:#15803d;color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-top:10px;">&#x1F5A8;&#xFE0F; طباعة التقرير</button>
 </div>
 <div class="ov" id="ov"><div class="sp"></div><div>&#1580;&#1575;&#1585;&#1610; &#1575;&#1604;&#1573;&#1585;&#1587;&#1575;&#1604;...</div></div>
 <div class="toast" id="t"></div>
@@ -228,6 +229,29 @@ function addH(n){
 
 function uProg(v){ document.getElementById('pv').textContent=v+'%'; document.getElementById('pb').style.width=v+'%'; }
 
+function printReport(){
+  var rows = window._lastReport;
+  if(!rows || !rows.length) return;
+  var r = rows[0];
+  var win = window.open('','_blank');
+  var houses = rows.map(function(h){
+    return '<tr><td>'+h.houseNum+'</td><td>'+h.workType+'</td><td>'+h.status+'</td><td>'+h.unitProgress+'</td><td>'+h.contractor+'</td><td>'+(h.desc||'—')+'</td><td>'+(h.notes||'—')+'</td><td>'+(h.houseStopReason||'—')+'</td></tr>';
+  }).join('');
+  var sumText = 'حالة الموقع: '+r.siteStatus;
+  if(r.siteStopReason) sumText += ' | سبب التوقف: '+r.siteStopReason;
+  sumText += ' | الإنجاز: '+r.totalProgress;
+  if(r.issues) sumText += ' | معوقات: '+r.issues;
+  if(r.tomorrow) sumText += ' | توصيات الغد: '+r.tomorrow;
+  win.document.write('<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير مهندس الموقع</title><style>body{font-family:Arial,sans-serif;padding:20px;direction:rtl;}h2{color:#1e3a5f;border-bottom:2px solid #1e3a5f;padding-bottom:8px;}table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px;}th{background:#1e3a5f;color:white;padding:8px;text-align:right;}td{padding:7px;border:1px solid #ddd;}tr:nth-child(even){background:#f5f5f5;}.header{background:#1e3a5f;color:white;padding:12px;border-radius:8px;margin-bottom:15px;}.summary{background:#14532d;color:white;padding:10px;border-radius:6px;margin-top:15px;font-size:12px;}@media print{button{display:none;}}</style></head><body>');
+  win.document.write('<div class="header"><h2 style="color:white;border:none;margin:0;">تقرير مهندس الموقع اليومي</h2></div>');
+  win.document.write('<table style="margin-bottom:15px;border:none;"><tr><td style="border:none;"><b>المشروع:</b> '+r.project+'</td><td style="border:none;"><b>المهندس:</b> '+r.engineer+'</td></tr><tr><td style="border:none;"><b>التاريخ:</b> '+r.date+'</td><td style="border:none;"><b>الوقت:</b> '+r.time+'</td></tr>'+(r.block?'<tr><td style="border:none;" colspan="2"><b>البلوك/البرج:</b> '+r.block+'</td></tr>':'')+'</table>');
+  win.document.write('<table><thead><tr><th>رقم البيت</th><th>نوع العمل</th><th>الحالة</th><th>الإنجاز %</th><th>المقاول</th><th>العمل المنجز</th><th>ملاحظات</th><th>سبب التوقف</th></tr></thead><tbody>'+houses+'</tbody></table>');
+  win.document.write('<div class="summary">'+sumText+'</div>');
+  win.document.write('<br><button onclick="window.print()" style="padding:10px 20px;background:#1e3a5f;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">🖨️ طباعة / PDF</button>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
+
 function send(){
   var date=document.getElementById('d').value;
   var eng=document.getElementById('e').value.trim();
@@ -260,7 +284,12 @@ function send(){
   document.getElementById('ov').classList.add('show');
   document.getElementById('sb').disabled=true;
   fetch(SU,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows:rows})})
-    .then(function(){ document.getElementById('ov').classList.remove('show'); toast('تم الإرسال بنجاح','ts'); document.getElementById('sb').disabled=false; setTimeout(reset,2000); })
+    .then(function(){ document.getElementById('ov').classList.remove('show'); toast('تم الإرسال بنجاح','ts'); document.getElementById('sb').disabled=false;
+    // Show print button
+    var printBtn = document.getElementById('print-btn');
+    if(printBtn) printBtn.style.display='block';
+    window._lastReport = rows;
+    setTimeout(reset,4000); })
     .catch(function(){ document.getElementById('ov').classList.remove('show'); toast('فشل الإرسال','te'); document.getElementById('sb').disabled=false; });
 }
 
