@@ -58,7 +58,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="g3">
         <div class="fg"><label>&#1575;&#1604;&#1578;&#1575;&#1585;&#1610;&#1582;</label><input type="date" id="d"></div>
         <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1607;&#1606;&#1583;&#1587;</label><input type="text" id="e" placeholder="م. فيصل"></div>
-        <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1588;&#1585;&#1608;&#1593;</label><input type="text" id="p" placeholder="&#1605;&#1580;&#1605;&#1593; &#1575;&#1604;&#1581;&#1610;"></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label>نوع المشروع</label>
+        <div class="fg"><label>اسم المشروع</label>
+<select id="p">
+<option value="جادة بغداد">جادة بغداد</option>
+<option value="مدينة المستقبل">مدينة المستقبل</option>
+</select></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label>نوع المشروع</label>
 <select id="proj-type" onchange="changeProjectType()">
 <option value="بيت">مجمع سكني (بيوت)</option>
 <option value="برج">عمارة / برج (طوابق)</option>
@@ -230,7 +234,10 @@ function send(){
   var proj=document.getElementById('p').value.trim();
   if(!date||!eng||!proj){ toast('يرجى ملء التاريخ واسم المهندس والمشروع','te'); return; }
 
-  if(!confirm('هل أنت متأكد من إرسال التقرير؟')) return;
+  var projName = document.getElementById('p').value;
+  var blkVal = document.getElementById('blk').value;
+  var msg = 'تأكيد إرسال التقرير\n\nالمشروع: ' + projName + '\n' + (blkVal ? 'البلوك/البرج: ' + blkVal + '\n' : '') + 'المهندس: ' + eng + '\nالتاريخ: ' + date + '\n\nهل أنت متأكد؟';
+  if(!confirm(msg)) return;
   var rows=[];
   document.querySelectorAll('.hr').forEach(function(row){
     rows.push({
