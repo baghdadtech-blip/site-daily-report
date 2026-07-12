@@ -108,7 +108,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="toast" id="t"></div>
 
 <script>
-var SU = 'https://script.google.com/macros/s/AKfycbyEPJhWKU0VYnTvKb7S9RgC4_xc5FRlHbfusRmnL4Mwp9kA-6JOIRr20hR2uXdC6TPp3w/exec';
+var SU = 'https://script.google.com/macros/s/AKfycbx8CqQF5FpWMIHbY57xeH642jr7x0DcxK0BMhsC3X5EcW6ng-81HZbjKwXhZgZxJW7v/exec';
 var WT = ['البناء بالبلوك','الحفر والأساسات','الهيكل الإنشائي','التشطيبات الداخلية','التشطيبات الخارجية','الأعمال الكهربائية','الأعمال الميكانيكية','السقف والعزل','الأرضيات','أعمال الصبغ','الأبواب والنوافذ','أعمال أخرى'];
 var hc = 0;
 
@@ -161,7 +161,7 @@ function addH(n){
   del.className = 'db';
   del.type = 'button';
   del.textContent = '✕';
-  del.addEventListener('click', function(){ row.parentNode.removeChild(row); });
+  del.addEventListener('click', function(){ if(window.confirm('هل تريد حذف هذه الوحدة؟')) row.parentNode.removeChild(row); });
   row.appendChild(del);
 
   var inner = document.createElement('div');
