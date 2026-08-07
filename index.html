@@ -58,11 +58,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="g3">
         <div class="fg"><label>&#1575;&#1604;&#1578;&#1575;&#1585;&#1610;&#1582;</label><input type="date" id="d"></div>
         <div class="fg"><label>&#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1607;&#1606;&#1583;&#1587;</label><input type="text" id="e" placeholder="م. فيصل"></div>
-        <div class="fg"><label>اسم المشروع</label>
-<select id="p">
-<option value="جادة بغداد">جادة بغداد</option>
-<option value="مدينة المستقبل">مدينة المستقبل</option>
-</select></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label>نوع المشروع</label>
+        <div class="fg"><label>اسم المشروع</label><input type="text" id="p" placeholder="اكتب اسم المشروع..."></div></div><div class="grid3" style="margin-top:11px;"><div class="fg"><label>نوع المشروع</label>
 <select id="proj-type" onchange="changeProjectType()">
 <option value="بيت">مجمع سكني (بيوت)</option>
 <option value="برج">عمارة / برج (طوابق)</option>
@@ -102,8 +98,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="fg" style="margin-top:10px"><label>توصيات الغد</label><textarea id="su2" placeholder="ما يجب متابعته غداً..."></textarea></div>
     </div>
   </div>
-  <button class="sub" id="sb">&#128228; &#1573;&#1585;&#1587;&#1575;&#1604; &#1575;&#1604;&#1578;&#1602;&#1585;&#1610;&#1585;</button>
-<button id="print-btn" onclick="printReport()" style="display:none;width:100%;padding:14px;background:#15803d;color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-top:10px;">&#x1F5A8;&#xFE0F; طباعة التقرير</button>
+  <button class="sub" id="sb">📤 إرسال وطباعة</button>
+
 </div>
 <div class="ov" id="ov"><div class="sp"></div><div>&#1580;&#1575;&#1585;&#1610; &#1575;&#1604;&#1573;&#1585;&#1587;&#1575;&#1604;...</div></div>
 <div class="toast" id="t"></div>
@@ -121,7 +117,7 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('d').value = yyyy + '-' + mm + '-' + dd;
   document.getElementById('ab').addEventListener('click', function(){ addH(0); });
   document.getElementById('sb').addEventListener('click', send);
-  for(var i=1;i<=7;i++) addH(i);
+  addH(1);
 });
 
 function changeProjectType(){
@@ -234,21 +230,84 @@ function printReport(){
   if(!rows || !rows.length) return;
   var r = rows[0];
   var win = window.open('','_blank');
+  var unitLabel = r.projType === 'برج' ? 'رقم الطابق' : 'رقم البيت';
+  var blockLabel = r.projType === 'برج' ? 'البرج/العمارة' : 'البلوك';
   var houses = rows.map(function(h){
-    return '<tr><td>'+h.houseNum+'</td><td>'+h.workType+'</td><td>'+h.status+'</td><td>'+h.unitProgress+'</td><td>'+h.contractor+'</td><td>'+(h.desc||'—')+'</td><td>'+(h.notes||'—')+'</td><td>'+(h.houseStopReason||'—')+'</td></tr>';
+    return '<tr><td style="text-align:center;font-weight:bold;">'+h.houseNum+'</td><td>'+h.workType+'</td><td>'+h.status+'</td><td style="text-align:center;">'+h.unitProgress+'</td><td>'+h.contractor+'</td><td>'+(h.desc||'—')+'</td><td>'+(h.notes||'—')+'</td>'+(h.houseStopReason?'<td>'+h.houseStopReason+'</td>':'<td>—</td>')+'</tr>';
   }).join('');
   var sumText = 'حالة الموقع: '+r.siteStatus;
   if(r.siteStopReason) sumText += ' | سبب التوقف: '+r.siteStopReason;
-  sumText += ' | الإنجاز: '+r.totalProgress;
+  sumText += ' | نسبة الإنجاز: '+r.totalProgress;
   if(r.issues) sumText += ' | معوقات: '+r.issues;
   if(r.tomorrow) sumText += ' | توصيات الغد: '+r.tomorrow;
-  win.document.write('<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير مهندس الموقع</title><style>body{font-family:Arial,sans-serif;padding:20px;direction:rtl;}h2{color:#1e3a5f;border-bottom:2px solid #1e3a5f;padding-bottom:8px;}table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px;}th{background:#1e3a5f;color:white;padding:8px;text-align:right;}td{padding:7px;border:1px solid #ddd;}tr:nth-child(even){background:#f5f5f5;}.header{background:#1e3a5f;color:white;padding:12px;border-radius:8px;margin-bottom:15px;}.summary{background:#14532d;color:white;padding:10px;border-radius:6px;margin-top:15px;font-size:12px;}@media print{button{display:none;}}</style></head><body>');
-  win.document.write('<div class="header"><h2 style="color:white;border:none;margin:0;">تقرير مهندس الموقع اليومي</h2></div>');
-  win.document.write('<table style="margin-bottom:15px;border:none;"><tr><td style="border:none;"><b>المشروع:</b> '+r.project+'</td><td style="border:none;"><b>المهندس:</b> '+r.engineer+'</td></tr><tr><td style="border:none;"><b>التاريخ:</b> '+r.date+'</td><td style="border:none;"><b>الوقت:</b> '+r.time+'</td></tr>'+(r.block?'<tr><td style="border:none;" colspan="2"><b>البلوك/البرج:</b> '+r.block+'</td></tr>':'')+'</table>');
-  win.document.write('<table><thead><tr><th>رقم البيت</th><th>نوع العمل</th><th>الحالة</th><th>الإنجاز %</th><th>المقاول</th><th>العمل المنجز</th><th>ملاحظات</th><th>سبب التوقف</th></tr></thead><tbody>'+houses+'</tbody></table>');
-  win.document.write('<div class="summary">'+sumText+'</div>');
-  win.document.write('<br><button onclick="window.print()" style="padding:10px 20px;background:#1e3a5f;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">🖨️ طباعة / PDF</button>');
-  win.document.write('</body></html>');
+  win.document.write(`<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تقرير مهندس الموقع</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Arial',sans-serif;background:#f5f5f5;padding:16px;direction:rtl;color:#1a1a1a;}
+.card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);margin-bottom:14px;}
+.header{background:#1e3a5f;color:white;padding:16px;text-align:center;}
+.header h1{font-size:18px;margin-bottom:4px;}
+.header p{font-size:12px;opacity:0.8;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e0e0e0;}
+.info-item{background:white;padding:10px 14px;}
+.info-label{font-size:10px;color:#888;margin-bottom:2px;}
+.info-value{font-size:13px;font-weight:bold;color:#1e3a5f;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+thead tr{background:#1e3a5f;}
+th{color:white;padding:8px 6px;text-align:right;font-size:11px;}
+td{padding:7px 6px;border-bottom:1px solid #eee;vertical-align:top;}
+tr:hover td{background:#f9f9f9;}
+.summary{background:#14532d;color:white;padding:12px 14px;font-size:12px;line-height:1.8;}
+.btn-row{display:flex;gap:10px;padding:14px;background:white;border-radius:12px;}
+.btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;font-family:Arial;}
+.btn-print{background:#1e3a5f;color:white;}
+.btn-wa{background:#25d366;color:white;}
+@media print{.btn-row{display:none;}body{background:white;padding:0;}}</style>
+</head>
+<body>
+<div class="card">
+<div class="header">
+<h1>🏗️ تقرير مهندس الموقع اليومي</h1>
+<p>${r.project}</p>
+</div>
+<div class="info-grid">
+<div class="info-item"><div class="info-label">المهندس</div><div class="info-value">${r.engineer}</div></div>
+<div class="info-item"><div class="info-label">التاريخ</div><div class="info-value">${r.date}</div></div>
+<div class="info-item"><div class="info-label">الوقت</div><div class="info-value">${r.time}</div></div>
+${r.block ? '<div class="info-item"><div class="info-label">'+blockLabel+'</div><div class="info-value">'+r.block+'</div></div>' : ''}
+<div class="info-item"><div class="info-label">حالة الموقع</div><div class="info-value">${r.siteStatus}</div></div>
+<div class="info-item"><div class="info-label">نسبة الإنجاز</div><div class="info-value">${r.totalProgress}</div></div>
+</div>
+</div>
+<div class="card">
+<table>
+<thead><tr><th>${unitLabel}</th><th>نوع العمل</th><th>الحالة</th><th>الإنجاز</th><th>المقاول</th><th>العمل المنجز</th><th>ملاحظات</th><th>سبب التوقف</th></tr></thead>
+<tbody>${houses}</tbody>
+</table>
+</div>
+<div class="card summary">${sumText}</div>
+<div class="btn-row">
+<button class="btn btn-print" onclick="window.print()">🖨️ طباعة / PDF</button>
+<button class="btn btn-wa" onclick="shareWA()">📲 إرسال واتساب</button>
+</div>
+<script>
+function shareWA(){
+  var text = '🏗️ تقرير مهندس الموقع\n\n';
+  text += '📋 المشروع: ${r.project}\n';
+  text += '👷 المهندس: ${r.engineer}\n';
+  text += '📅 التاريخ: ${r.date}\n';
+  text += '🕐 الوقت: ${r.time}\n';
+  ${r.block ? "text += '🏠 "+blockLabel+": '+r.block+'\n';" : ''}
+  text += '\n📊 ${sumText}';
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+<\/script>
+</body></html>`);
   win.document.close();
 }
 
@@ -300,7 +359,7 @@ function reset(){
   document.getElementById('sw').style.display='none';
   document.getElementById('rp').value=0; uProg(0);
   document.getElementById('hl').innerHTML='';
-  hc=0; for(var i=1;i<=7;i++) addH(i);
+  hc=0; addH(1);
 }
 
 function toast(msg,cls){
