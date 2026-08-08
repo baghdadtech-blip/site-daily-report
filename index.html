@@ -297,13 +297,19 @@ ${r.block ? '<div class="info-item"><div class="info-label">'+blockLabel+'</div>
 </div>
 <script>
 function shareWA(){
+  var r = window._lastReport[0];
+  var sumText = 'حالة الموقع: '+r.siteStatus;
+  if(r.siteStopReason) sumText += ' | سبب التوقف: '+r.siteStopReason;
+  sumText += ' | نسبة الإنجاز: '+r.totalProgress;
+  if(r.issues) sumText += ' | معوقات: '+r.issues;
+  if(r.tomorrow) sumText += ' | توصيات الغد: '+r.tomorrow;
   var text = '🏗️ تقرير مهندس الموقع\n\n';
-  text += '📋 المشروع: ${r.project}\n';
-  text += '👷 المهندس: ${r.engineer}\n';
-  text += '📅 التاريخ: ${r.date}\n';
-  text += '🕐 الوقت: ${r.time}\n';
-  ${r.block ? "text += '🏠 "+blockLabel+": '+r.block+'\n';" : ''}
-  text += '\n📊 ${sumText}';
+  text += '📋 المشروع: '+r.project+'\n';
+  text += '👷 المهندس: '+r.engineer+'\n';
+  text += '📅 التاريخ: '+r.date+'\n';
+  text += '🕐 الوقت: '+r.time+'\n';
+  if(r.block) text += '🏠 البلوك: '+r.block+'\n';
+  text += '\n📊 '+sumText;
   window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
 }
 <\/script>
