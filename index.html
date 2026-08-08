@@ -240,6 +240,8 @@ function printReport(){
   sumText += ' | نسبة الإنجاز: '+r.totalProgress;
   if(r.issues) sumText += ' | معوقات: '+r.issues;
   if(r.tomorrow) sumText += ' | توصيات الغد: '+r.tomorrow;
+  // Embed data in page
+  var dataStr = JSON.stringify(rows).replace(/'/g, '&#39;');
   win.document.write(`<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -270,6 +272,7 @@ tr:hover td{background:#f9f9f9;}
 @media print{.btn-row{display:none;}body{background:white;padding:0;}}</style>
 </head>
 <body>
+<input type='hidden' id='report-data' value='`+dataStr+`'>
 <div class="card">
 <div class="header">
 <h1>🏗️ تقرير مهندس الموقع اليومي</h1>
@@ -297,7 +300,8 @@ ${r.block ? '<div class="info-item"><div class="info-label">'+blockLabel+'</div>
 </div>
 <script>
 function shareWA(){
-  var r = window._lastReport[0];
+  var data = JSON.parse(document.getElementById('report-data').value);
+  var r = data[0];
   var sumText = 'حالة الموقع: '+r.siteStatus;
   if(r.siteStopReason) sumText += ' | سبب التوقف: '+r.siteStopReason;
   sumText += ' | نسبة الإنجاز: '+r.totalProgress;
