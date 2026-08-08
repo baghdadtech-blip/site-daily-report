@@ -342,14 +342,12 @@ function send(){
   });
   document.getElementById('ov').classList.add('show');
   document.getElementById('sb').disabled=true;
-  fetch(SU,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows:rows})})
-    .then(function(){ document.getElementById('ov').classList.remove('show'); toast('تم الإرسال بنجاح','ts'); document.getElementById('sb').disabled=false;
-    // Show print button
-    var printBtn = document.getElementById('print-btn');
-    if(printBtn) printBtn.style.display='block';
-    window._lastReport = rows;
-    setTimeout(reset,4000); })
-    .catch(function(){ document.getElementById('ov').classList.remove('show'); toast('فشل الإرسال','te'); document.getElementById('sb').disabled=false; });
+  window._lastReport = rows;
+  // إرسال الإيميل في الخلفية
+  fetch(SU,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows:rows})});
+  document.getElementById('sb').disabled=false;
+  printReport();
+  setTimeout(reset,1000);
 }
 
 function reset(){
